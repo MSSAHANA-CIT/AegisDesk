@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast - AegisDesk</title>
+    <link rel="stylesheet" href="styles/welcome.css">
+    <link rel="stylesheet" href="styles/weather-forecast.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v6m0 6v6"></path>
+                        <path d="M18 8a6 6 0 01-6 6"></path>
+                        <path d="M6 8a6 6 0 006 6"></path>
+                    </svg>
+                </div>
+                <a href="welcome.html" style="text-decoration: none; color: inherit;">
+                    <span class="logo-text">AegisDesk Weather</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="desktop.html" class="nav-link">Desktop</a>
+                <a href="welcome.html" class="nav-link">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Weather Forecast Container -->
+    <div class="weather-forecast-container">
+        <div class="container">
+            <div class="weather-header-section">
+                <h1 class="weather-title">Tamil Nadu Weather Forecast</h1>
+                <p class="weather-subtitle">Detailed 7-day forecasts for major cities</p>
+            </div>
+
+            <!-- City Selector -->
+            <div class="city-selector">
+                <select id="city-selector" class="city-select">
+                    <option value="">Select a City...</option>
+                </select>
+            </div>
+
+            <!-- Weather Display -->
+            <div id="weather-display" class="weather-display">
+                <div class="weather-placeholder">
+                    <div class="placeholder-icon">🌤️</div>
+                    <h3>Select a city to view forecast</h3>
+                    <p>Choose from the dropdown above</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/weather-forecast.js"></script>
+</body>
+</html>
+
