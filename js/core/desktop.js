@@ -165,6 +165,15 @@ class Desktop {
             case 'bookmarks':
                 bookmarksApp.open();
                 break;
+            case 'calculator':
+                calculatorApp.open();
+                break;
+            case 'calendar':
+                calendarApp.open();
+                break;
+            case 'files':
+                filesApp.open();
+                break;
             case 'settings':
                 settingsApp.open();
                 break;

@@ -47,25 +47,34 @@ class WorldClock {
 
         item.innerHTML = `
             <div class="world-clock-face">
-                <div class="world-clock-markers"></div>
+                <div class="world-clock-numbers-12"></div>
                 <div class="world-clock-hour-hand" data-hand="hour"></div>
                 <div class="world-clock-minute-hand" data-hand="minute"></div>
                 <div class="world-clock-center"></div>
             </div>
             <div class="world-clock-city">${timezone.city}</div>
-            <div class="world-clock-time" data-time>00:00:00</div>
+            <div class="world-clock-time-display">
+                <div class="world-clock-time-12" data-time-12>12:00:00 AM</div>
+            </div>
             <div class="world-clock-date" data-date>Mon, Jan 1</div>
             <div class="world-clock-timezone">${timezone.tz.replace('_', ' ')}</div>
         `;
 
-        // Add clock markers
-        const markers = item.querySelector('.world-clock-markers');
-        for (let i = 0; i < 12; i++) {
-            const marker = document.createElement('div');
-            marker.className = `world-clock-marker ${i % 3 === 0 ? 'major' : ''}`;
-            const angle = i * 30;
-            marker.style.transform = `rotate(${angle}deg) translateY(0)`;
-            markers.appendChild(marker);
+        // Add 12-hour numbers (1-12) - centered on clock face
+        const numbers12 = item.querySelector('.world-clock-numbers-12');
+        for (let i = 1; i <= 12; i++) {
+            const number = document.createElement('div');
+            number.className = 'world-clock-number world-clock-number-12';
+            number.textContent = i;
+            const angle = (i * 30) - 90;
+            const radius = 57; // Centered radius for 140px clock face (70px radius)
+            const x = Math.cos(angle * Math.PI / 180) * radius;
+            const y = Math.sin(angle * Math.PI / 180) * radius;
+            number.style.left = `calc(50% + ${x}px)`;
+            number.style.top = `calc(50% + ${y}px)`;
+            number.style.transform = 'translate(-50%, -50%)';
+            number.style.zIndex = '15';
+            numbers12.appendChild(number);
         }
 
         return item;
@@ -74,6 +83,7 @@ class WorldClock {
     updateClocks() {
         document.querySelectorAll('.world-clock-item').forEach(item => {
             const timezone = item.dataset.timezone;
+            // Use proper timezone conversion
             const now = new Date(new Date().toLocaleString('en-US', { timeZone: timezone }));
             
             const hours = now.getHours();
@@ -82,12 +92,12 @@ class WorldClock {
             
             const hourHand = item.querySelector('[data-hand="hour"]');
             const minuteHand = item.querySelector('[data-hand="minute"]');
-            const timeDisplay = item.querySelector('[data-time]');
+            const timeDisplay12 = item.querySelector('[data-time-12]');
             const dateDisplay = item.querySelector('[data-date]');
             
-            // Update hands
-            const hourAngle = (hours % 12) * 30 + minutes * 0.5;
-            const minuteAngle = minutes * 6 + seconds * 0.1;
+            // Update hands - hour hand uses 24-hour format rotation
+            const hourAngle = (hours * 15) + (minutes * 0.25); // 360/24 = 15 degrees per hour
+            const minuteAngle = (minutes * 6) + (seconds * 0.1); // 360/60 = 6 degrees per minute
             
             if (hourHand) {
                 hourHand.style.transform = `rotate(${hourAngle}deg)`;
@@ -96,10 +106,12 @@ class WorldClock {
                 minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
             }
             
-            // Update time display
-            if (timeDisplay) {
-                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                timeDisplay.textContent = timeString;
+            // Update 12-hour time display
+            if (timeDisplay12) {
+                const hours12 = hours % 12 || 12;
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const timeString12 = `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+                timeDisplay12.textContent = timeString12;
             }
             
             // Update date display
