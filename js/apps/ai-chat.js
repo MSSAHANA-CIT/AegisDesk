@@ -4,13 +4,8 @@ class AIChatApp {
         this.windowId = 'ai-chat';
         this.chatHistory = storage.get('aiChatHistory', []);
         this.isTyping = false;
-        // DO NOT hardcode API keys in client-side code
-        // Users should set their API key through the Settings app
-        this.defaultApiKey = ""; // Empty by default - user must configure in settings
-        this.apiUrl = 'https://api.openai.com/v1/chat/completions';
-        
-        // Note: API key should be set by user through Settings app
-        // We don't set a default key for security reasons
+        // Use serverless API endpoint (API key is stored securely on server)
+        this.apiUrl = '/api/chat';
     }
 
     open() {
@@ -215,9 +210,9 @@ class AIChatApp {
                 
                 let errorContent = `Sorry, I encountered an error: ${error.message}`;
                 
-                // If it's an API key error, add helpful instructions
-                if (error.message.includes('API key') || error.message.includes('No API key')) {
-                    errorContent = `🔑 **API Key Required**\n\nTo use the AI Assistant, you need to add your OpenAI API key.\n\n1. Click the **Settings** icon in the taskbar (or press Alt+Space and search for Settings)\n2. Scroll to the "AI Assistant" section\n3. Enter your OpenAI API key\n4. The key is saved locally and only sent to OpenAI\n\nGet your API key at: https://platform.openai.com/api-keys`;
+                // If it's a server configuration error, provide helpful message
+                if (error.message.includes('Server configuration') || error.message.includes('OPENAI_API_KEY')) {
+                    errorContent = `⚠️ **Server Configuration Required**\n\nThis AI Assistant requires server-side configuration.\n\nThe administrator needs to:\n1. Set the OPENAI_API_KEY environment variable on the server\n2. Deploy the /api/chat.js serverless function\n\nIf you're the administrator, check your deployment platform's environment variables settings.`;
                 }
                 
                 const errorMessage = { 
@@ -267,12 +262,6 @@ class AIChatApp {
     }
 
     async getAIResponse(userMessage) {
-        const apiKey = storage.get('openai_api_key') || this.defaultApiKey;
-
-        if (!apiKey || apiKey.trim() === '') {
-            throw new Error('No API key configured. Please add your OpenAI API key in Settings.');
-        }
-
         // Build messages array
         const messages = [
             {
@@ -296,24 +285,25 @@ Be conversational, helpful, and concise. Keep responses brief and friendly.`
         ];
 
         try {
+            // Call our secure serverless API endpoint
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey.trim()}`
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
-                    messages: messages,
-                    max_tokens: 500,
-                    temperature: 0.7
-                })
+                body: JSON.stringify({ messages })
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                const errorMessage = errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`;
-                throw new Error(errorMessage);
+                const errorMessage = errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+                
+                // Handle server configuration errors
+                if (errorMessage.includes('OPENAI_API_KEY') || errorMessage.includes('Missing')) {
+                    throw new Error('Server configuration error. Please contact the administrator.');
+                }
+                
+                throw new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
             }
 
             const data = await response.json();
@@ -326,7 +316,7 @@ Be conversational, helpful, and concise. Keep responses brief and friendly.`
             console.error('AI API error:', error);
             // Re-throw with a more user-friendly message
             if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-                throw new Error('Invalid API key. Please check your OpenAI API key in Settings.');
+                throw new Error('Authentication failed. Please check server configuration.');
             } else if (error.message.includes('429') || error.message.includes('rate limit')) {
                 throw new Error('Rate limit exceeded. Please try again in a moment.');
             } else if (error.message.includes('network') || error.message.includes('fetch')) {

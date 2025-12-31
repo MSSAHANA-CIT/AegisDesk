@@ -81,14 +81,32 @@ An AI-powered mini operating system website that replaces scattered life-managem
 
 ## 🔧 Configuration
 
-### AI Assistant Setup (Optional)
+### AI Assistant Setup
 
+The AI Assistant uses a secure serverless API endpoint to keep your API key safe. You have two options:
+
+#### Option 1: Serverless API (Recommended - Secure)
+
+1. **Deploy to Vercel** (or similar platform with serverless functions):
+   - Connect your repository to Vercel
+   - Add environment variable: `OPENAI_API_KEY` with your OpenAI API key
+   - The `/api/chat.js` endpoint will handle API calls securely
+   - No API key needed in the browser!
+
+2. **Get your OpenAI API key**:
+   - Visit https://platform.openai.com/api-keys
+   - Create a new API key
+   - Copy it to your deployment platform's environment variables
+
+#### Option 2: Client-Side (Legacy - Less Secure)
+
+If you're running locally without a serverless function:
 1. Open the Settings app
 2. Navigate to "AI Assistant" section
 3. Enter your OpenAI API key
-4. Save and start chatting with enhanced AI capabilities
+4. The key is stored locally in your browser
 
-**Note**: The AI Assistant works with local responses even without an API key. Adding an OpenAI API key enables full GPT-powered responses.
+**Note**: The serverless API approach is recommended for production deployments as it keeps your API key secure on the server side.
 
 ### Weather API
 
@@ -99,6 +117,8 @@ The weather app uses Open-Meteo API (free, no key required) for real-time weathe
 ```
 AegisDesk/
 ├── index.html              # Main HTML file
+├── api/
+│   └── chat.js            # Serverless API endpoint (Vercel/Netlify)
 ├── styles/
 │   ├── main.css           # Main styles and desktop UI
 │   ├── window.css         # Window styles
@@ -161,7 +181,10 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 ## 🐛 Troubleshooting
 
 - **Weather not loading**: Check your internet connection. The app will use sample data if the API is unavailable.
-- **AI not responding**: Make sure you've entered a valid OpenAI API key in Settings (optional)
+- **AI not responding**: 
+  - If using serverless API: Check that `OPENAI_API_KEY` environment variable is set in your deployment platform
+  - If using client-side: Make sure you've entered a valid OpenAI API key in Settings
+  - Check browser console for error messages
 - **Windows not saving position**: Clear your browser cache and try again
 - **Data not persisting**: Ensure localStorage is enabled in your browser
 
