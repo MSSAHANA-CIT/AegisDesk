@@ -296,11 +296,16 @@ Be conversational, helpful, and concise. Keep responses brief and friendly.`
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                const errorMessage = errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+                let errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
                 
                 // Handle server configuration errors
-                if (errorMessage.includes('OPENAI_API_KEY') || errorMessage.includes('Missing')) {
-                    throw new Error('Server configuration error. Please contact the administrator.');
+                if (errorMessage.includes('OPENAI_API_KEY') || errorMessage.includes('Missing') || errorMessage.includes('Server configuration')) {
+                    throw new Error('Server configuration error. The OPENAI_API_KEY environment variable may not be set on the server.');
+                }
+                
+                // Handle OpenAI API errors
+                if (errorData.details && errorData.details.message) {
+                    errorMessage = errorData.details.message;
                 }
                 
                 throw new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
