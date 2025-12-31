@@ -65,14 +65,15 @@ class SettingsApp {
                     <div class="settings-item">
                         <div class="settings-item-label" style="flex: 1;">
                             <div class="settings-item-title">OpenAI API Key</div>
-                            <div class="settings-item-desc">Enter your OpenAI API key to enable full AI capabilities (optional)</div>
+                            <div class="settings-item-desc">Enter your OpenAI API key to enable AI Assistant features</div>
                             <input type="password" 
                                    id="openai-api-key" 
                                    value="${this.escapeHtml(storage.get('openai_api_key', this.settings.openaiApiKey))}" 
                                    placeholder="sk-..."
                                    style="margin-top: 8px; width: 100%; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px; font-family: 'JetBrains Mono', monospace;">
                             <small style="color: var(--text-muted); font-size: 11px; margin-top: 4px; display: block;">
-                                Your API key is stored locally and never sent anywhere except OpenAI's servers. Default key is already configured.
+                                🔒 Your API key is stored locally in your browser and never sent anywhere except OpenAI's servers.<br>
+                                📝 Get your API key at: <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary-light); text-decoration: underline;">platform.openai.com/api-keys</a>
                             </small>
                         </div>
                     </div>

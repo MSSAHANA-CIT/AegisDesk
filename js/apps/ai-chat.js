@@ -129,7 +129,8 @@ class AIChatApp {
             .replace(/\n/g, '<br>')
             .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.+?)\*/g, '<em>$1</em>')
-            .replace(/`(.+?)`/g, '<code style="background: rgba(99, 102, 241, 0.2); padding: 2px 6px; border-radius: 4px; font-family: monospace;">$1</code>');
+            .replace(/`(.+?)`/g, '<code style="background: rgba(99, 102, 241, 0.2); padding: 2px 6px; border-radius: 4px; font-family: monospace;">$1</code>')
+            .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: #19c37d; text-decoration: underline;">$1</a>');
     }
 
     attachEvents(window) {
@@ -211,9 +212,17 @@ class AIChatApp {
             } catch (error) {
                 this.hideTyping(messagesContainer);
                 console.error('AI Error:', error);
+                
+                let errorContent = `Sorry, I encountered an error: ${error.message}`;
+                
+                // If it's an API key error, add helpful instructions
+                if (error.message.includes('API key') || error.message.includes('No API key')) {
+                    errorContent = `🔑 **API Key Required**\n\nTo use the AI Assistant, you need to add your OpenAI API key.\n\n1. Click the **Settings** icon in the taskbar (or press Alt+Space and search for Settings)\n2. Scroll to the "AI Assistant" section\n3. Enter your OpenAI API key\n4. The key is saved locally and only sent to OpenAI\n\nGet your API key at: https://platform.openai.com/api-keys`;
+                }
+                
                 const errorMessage = { 
                     role: 'assistant', 
-                    content: `Sorry, I encountered an error: ${error.message}. Please check your API key in Settings or try again.`, 
+                    content: errorContent, 
                     timestamp: Date.now() 
                 };
                 this.addMessage(errorMessage, messagesContainer);
