@@ -45,11 +45,10 @@ const APP_REGISTRY = {
             <path d="M2 12l10 5 10-5"></path>
         </svg>`,
         open: function(url) {
-            if (url) {
-                window.open(url, '_blank');
-            } else if (typeof aiChatApp !== 'undefined') {
-                aiChatApp.open();
-            }
+            // Always open ai-chat.html - use provided URL or default
+            const aiChatUrl = url || 'ai-chat.html';
+            console.log('AI Assistant opening:', aiChatUrl);
+            window.open(aiChatUrl, '_blank');
         }
     },
     'browser': {

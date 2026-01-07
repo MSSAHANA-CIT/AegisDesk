@@ -375,11 +375,10 @@ class Desktop {
                 if (typeof weatherApp !== 'undefined') weatherApp.open();
                 break;
             case 'ai-chat':
-                if (url) {
-                    window.open(url, '_blank');
-                } else if (typeof aiChatApp !== 'undefined') {
-                    aiChatApp.open();
-                }
+                // Always open ai-chat.html in a new window/tab
+                const aiChatUrl = url || 'ai-chat.html';
+                console.log('Opening AI Assistant:', aiChatUrl);
+                window.open(aiChatUrl, '_blank');
                 break;
             case 'browser':
                 if (typeof browserApp !== 'undefined') {

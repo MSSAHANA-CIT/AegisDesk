@@ -311,6 +311,8 @@ class DesktopIconCarousel {
         const { id, app } = this.currentApp;
         const url = this.currentApp.element?.dataset.url || null;
         
+        console.log('Opening app:', id, 'with URL:', url);
+        
         // Close modal
         this.closeModal();
         
@@ -318,9 +320,18 @@ class DesktopIconCarousel {
         setTimeout(() => {
             // Use desktop's openApp method if available
             if (typeof desktop !== 'undefined' && desktop.openApp) {
+                console.log('Using desktop.openApp');
                 desktop.openApp(id, url);
             } else if (app && app.open) {
+                console.log('Using app.open');
                 app.open(url);
+            } else {
+                console.error('No method to open app:', id);
+                // Fallback: directly open URL if available
+                if (url && (id === 'ai-chat' || id === 'browser')) {
+                    console.log('Fallback: opening URL directly');
+                    window.open(url, '_blank');
+                }
             }
         }, 200);
     }

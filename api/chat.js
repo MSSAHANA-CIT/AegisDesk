@@ -1,4 +1,4 @@
-// Vercel Serverless Function for OpenAI API
+// Vercel Serverless Function for OpenAI API - OPTIMIZED FOR SPEED
 // This keeps the API key secure on the server side
 
 export default async function handler(req, res) {
@@ -19,14 +19,6 @@ export default async function handler(req, res) {
 
   // Get API key from environment variable (supports both names)
   const apiKey = process.env.OPENAI_API_KEY || process.env.OPEN_API;
-  
-  // Debug logging
-  console.log("Environment check:", {
-    hasOpenAIKey: !!process.env.OPENAI_API_KEY,
-    hasOpenAPI: !!process.env.OPEN_API,
-    keyLength: apiKey ? apiKey.length : 0,
-    keyPrefix: apiKey ? apiKey.substring(0, 7) : 'none'
-  });
   
   if (!apiKey) {
     console.error("OPENAI_API_KEY or OPEN_API environment variable is not set");
@@ -58,12 +50,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log("Calling OpenAI API with", messages.length, "messages");
+    // OPTIMIZED FOR SPEED: Use fastest model with minimal tokens
+    let model = "gpt-3.5-turbo"; // Fastest model
     
-    // Use faster model and optimized settings for speed
-    let model = "gpt-3.5-turbo";
+    // Limit messages to last 5 for faster processing (reduced from 10)
+    const limitedMessages = messages.length > 5 
+      ? [messages[0], ...messages.slice(-4)] // Keep system message + last 4
+      : messages;
     
-    // Call OpenAI API
+    // Call OpenAI API with optimized settings for speed
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -72,19 +67,17 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: model,
-        messages: messages,
-        max_tokens: 1000,
-        temperature: 0.7,
-        top_p: 0.9,
-        frequency_penalty: 0.2,
-        presence_penalty: 0.2,
+        messages: limitedMessages,
+        max_tokens: 500, // Reduced from 1000 for faster responses
+        temperature: 0.5, // Lower for faster, more focused responses
+        top_p: 0.8, // Reduced for faster generation
+        frequency_penalty: 0.1, // Reduced
+        presence_penalty: 0.1, // Reduced
         stream: false
       })
     });
 
     const data = await response.json();
-    
-    console.log("OpenAI API response status:", response.status);
 
     // Handle OpenAI API errors
     if (!response.ok) {
@@ -108,11 +101,9 @@ export default async function handler(req, res) {
       });
     }
 
-    console.log("OpenAI API success, returning response");
     return res.status(200).json(data);
   } catch (error) {
     console.error("OpenAI API error:", error);
-    console.error("Error stack:", error.stack);
     
     // Handle timeout
     if (error.name === 'AbortError' || error.message.includes('timeout')) {

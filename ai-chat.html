@@ -2011,13 +2011,13 @@
 
             async getAIResponse(userMessage) {
                 const currentChat = this.getCurrentChat();
-                // Limit context to last 10 messages for faster responses
+                // OPTIMIZED FOR SPEED: Limit context to last 4 messages (reduced from 10)
                 const messages = [
                     {
                         role: 'system',
-                        content: `You are AegisDesk AI, an advanced AI assistant. Be concise, helpful, and engaging. Use markdown for formatting.`
+                        content: `You are AegisDesk AI, an advanced AI assistant. Be concise, helpful, and engaging. Use markdown for formatting. Keep responses brief and to the point.`
                     },
-                    ...(currentChat?.messages || []).slice(-10).filter(msg => msg.role && msg.content).map(msg => ({
+                    ...(currentChat?.messages || []).slice(-4).filter(msg => msg.role && msg.content).map(msg => ({
                         role: msg.role,
                         content: msg.content
                     })),
@@ -2027,9 +2027,9 @@
                 try {
                     console.log('Sending request to /api/chat with', messages.length, 'messages');
                     
-                    // Use Vercel API endpoint with timeout
+                    // Use Vercel API endpoint with shorter timeout for speed
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second client timeout
+                    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout (reduced from 30)
                     
                     // Try multiple API endpoint formats for Vercel compatibility
                     const apiEndpoints = [
