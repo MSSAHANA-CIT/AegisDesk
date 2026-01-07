@@ -16,11 +16,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
 
-  // Get API key from environment variable
-  const apiKey = process.env.OPENAI_API_KEY;
+  // Get API key from environment variable (supports both names)
+  const apiKey = process.env.OPENAI_API_KEY || process.env.OPEN_API;
   if (!apiKey) {
-    console.error("OPENAI_API_KEY environment variable is not set");
-    return res.status(500).json({ error: "Server configuration error: Missing OPENAI_API_KEY" });
+    console.error("OPENAI_API_KEY or OPEN_API environment variable is not set");
+    return res.status(500).json({ error: "Server configuration error: Missing OPENAI_API_KEY or OPEN_API environment variable" });
   }
 
   // Get messages from request body
