@@ -610,6 +610,7 @@
             padding: 0;
             min-height: calc(100vh - 70px);
             min-height: calc(100dvh - 70px);
+            padding-bottom: 140px; /* keep space for fixed input bar */
             animation: mainFadeIn 0.8s ease-out;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: calc(100% - 320px);
@@ -933,15 +934,19 @@
             backdrop-filter: blur(40px) saturate(180%);
             border-top: 2px solid rgba(99, 102, 241, 0.3);
             border-radius: 24px 24px 0 0;
-            position: sticky;
-            bottom: 0;
-            z-index: 200;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 16px;
+            width: min(1200px, calc(100% - 32px));
+            z-index: 500;
             flex-shrink: 0;
-            margin-top: auto;
+            margin: 0 auto;
             box-shadow: 
                 0 -8px 32px rgba(0, 0, 0, 0.4),
                 inset 0 2px 0 rgba(255, 255, 255, 0.08),
-                0 0 0 1px rgba(99, 102, 241, 0.1) inset;
+                0 0 0 1px rgba(99, 102, 241, 0.1) inset,
+                0 18px 48px rgba(0,0,0,0.45);
             animation: inputSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: auto;
         }
