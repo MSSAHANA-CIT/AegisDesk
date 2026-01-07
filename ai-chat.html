@@ -943,6 +943,7 @@
                 inset 0 2px 0 rgba(255, 255, 255, 0.08),
                 0 0 0 1px rgba(99, 102, 241, 0.1) inset;
             animation: inputSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
         }
 
         @keyframes inputSlideUp {
@@ -1018,6 +1019,9 @@
             position: relative;
             overflow: hidden;
             animation: gradientShift 3s ease infinite;
+            pointer-events: auto !important;
+            z-index: 201;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .chat-send svg {
@@ -1057,6 +1061,16 @@
         .chat-send:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        
+        .chat-send {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+        
+        .chat-send:not(:disabled) {
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
 
         .chat-typing {
@@ -1639,7 +1653,7 @@
                 <div class="chat-input-wrapper">
                     <textarea class="chat-input" id="chat-input" placeholder="Message AegisDesk AI..." rows="1"></textarea>
                 </div>
-                <button class="chat-send" id="chat-send">
+                <button type="button" class="chat-send" id="chat-send" aria-label="Send message">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polyline points="22 2 15 22 11 13 2 9 22 2"></polyline>
@@ -1816,6 +1830,25 @@
                 this.apiKeyModal = document.getElementById('api-key-modal');
                 this.newChatBtn = document.getElementById('chat-new-btn');
 
+                // Debug: Check if elements are found
+                console.log('AIChat init - Elements found:', {
+                    messagesContainer: !!this.messagesContainer,
+                    input: !!this.input,
+                    sendBtn: !!this.sendBtn,
+                    welcomeScreen: !!this.welcomeScreen,
+                    newChatBtn: !!this.newChatBtn
+                });
+
+                if (!this.sendBtn) {
+                    console.error('ERROR: Send button not found!');
+                }
+                if (!this.input) {
+                    console.error('ERROR: Input field not found!');
+                }
+                if (!this.messagesContainer) {
+                    console.error('ERROR: Messages container not found!');
+                }
+
                 // Render chat list
                 this.renderChatList();
                 
@@ -1841,26 +1874,56 @@
             }
 
             setupEvents() {
+                // Check if elements exist before setting up events
+                if (!this.input) {
+                    console.error('Cannot setup events: input field not found');
+                    return;
+                }
+                if (!this.sendBtn) {
+                    console.error('Cannot setup events: send button not found');
+                    return;
+                }
+
+                console.log('Setting up event listeners...');
+
                 // Auto-resize textarea
                 this.input.addEventListener('input', () => {
                     this.input.style.height = 'auto';
                     this.input.style.height = Math.min(this.input.scrollHeight, 200) + 'px';
                 });
 
-                // Send message
+                // Send message function
                 const sendMessage = () => {
+                    console.log('sendMessage called');
+                    
+                    if (!this.input) {
+                        console.error('Input field not available');
+                        return;
+                    }
+                    
                     const text = this.input.value.trim();
-                    if (!text || this.isTyping) {
+                    console.log('Message text:', text);
+                    
+                    if (!text) {
+                        console.log('Empty message, ignoring');
+                        return;
+                    }
+                    
+                    if (this.isTyping) {
+                        console.log('Already typing, ignoring');
                         return;
                     }
 
                     // Get current chat
                     const currentChat = this.getCurrentChat();
                     if (!currentChat) {
+                        console.log('No current chat, creating new one');
                         this.createNewChat();
                         this.renderChatList();
                         return;
                     }
+                    
+                    console.log('Sending message:', text);
                     
                     this.hideWelcome();
                     this.addMessage('user', text);
@@ -1875,40 +1938,75 @@
                     }
                     
                     this.showTyping();
-                    this.sendBtn.disabled = true;
+                    if (this.sendBtn) {
+                        this.sendBtn.disabled = true;
+                    }
 
                     this.getAIResponse(text).then(response => {
+                        console.log('AI response received:', response.substring(0, 50) + '...');
                         this.hideTyping();
                         this.addMessage('assistant', response);
                         this.saveChats();
-                        this.sendBtn.disabled = false;
+                        if (this.sendBtn) {
+                            this.sendBtn.disabled = false;
+                        }
                     }).catch(error => {
+                        console.error('Error in getAIResponse:', error);
                         this.hideTyping();
-                        this.addMessage('assistant', `Sorry, I encountered an error: ${error.message}`);
+                        // Format error message with markdown support
+                        const errorMessage = error.message || 'An unexpected error occurred. Please check the browser console.';
+                        this.addMessage('assistant', errorMessage);
                         this.saveChats();
-                        this.sendBtn.disabled = false;
+                        if (this.sendBtn) {
+                            this.sendBtn.disabled = false;
+                        }
                     });
                 };
 
-                this.sendBtn.addEventListener('click', sendMessage);
-                this.input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
+                // Add click event to send button
+                if (this.sendBtn) {
+                    console.log('Adding click listener to send button');
+                    this.sendBtn.addEventListener('click', (e) => {
+                        console.log('Send button clicked!', e);
                         e.preventDefault();
+                        e.stopPropagation();
                         sendMessage();
-                    }
-                });
+                    });
+                    
+                    // Also add mousedown to ensure it works
+                    this.sendBtn.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                    });
+                } else {
+                    console.error('Send button not found when setting up events!');
+                }
+
+                // Add Enter key handler
+                if (this.input) {
+                    this.input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            console.log('Enter key pressed');
+                            sendMessage();
+                        }
+                    });
+                }
 
                 // Suggestion cards
                 document.querySelectorAll('.suggestion-card').forEach(card => {
                     card.addEventListener('click', () => {
                         const suggestion = card.dataset.suggestion;
-                        this.input.value = suggestion;
-                        this.input.focus();
-                        setTimeout(() => {
-                            sendMessage();
-                        }, 100);
+                        if (this.input) {
+                            this.input.value = suggestion;
+                            this.input.focus();
+                            setTimeout(() => {
+                                sendMessage();
+                            }, 100);
+                        }
                     });
                 });
+
+                console.log('Event listeners set up successfully');
             }
 
             async getAIResponse(userMessage) {
@@ -1927,68 +2025,150 @@
                 ];
 
                 try {
+                    console.log('Sending request to /api/chat with', messages.length, 'messages');
+                    
                     // Use Vercel API endpoint with timeout
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second client timeout
                     
-                    const response = await fetch('/api/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            messages: messages
-                        }),
-                        signal: controller.signal
-                    });
+                    // Try multiple API endpoint formats for Vercel compatibility
+                    const apiEndpoints = [
+                        '/api/chat',
+                        '/api/chat.js',
+                        './api/chat',
+                        './api/chat.js'
+                    ];
+                    
+                    let response;
+                    let lastError;
+                    
+                    for (const endpoint of apiEndpoints) {
+                        try {
+                            console.log(`Trying API endpoint: ${endpoint}`);
+                            response = await fetch(endpoint, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    messages: messages
+                                }),
+                                signal: controller.signal
+                            });
+                            
+                            // If we get a response (even if error), this endpoint works
+                            if (response !== undefined) {
+                                console.log(`Successfully connected to: ${endpoint}`);
+                                break;
+                            }
+                        } catch (fetchError) {
+                            console.log(`Failed to connect to ${endpoint}:`, fetchError.message);
+                            lastError = fetchError;
+                            continue;
+                        }
+                    }
+                    
+                    // If no endpoint worked, throw error
+                    if (!response) {
+                        clearTimeout(timeoutId);
+                        console.error('All API endpoints failed. Last error:', lastError);
+                        
+                        // Handle network errors
+                        if (lastError && lastError.name === 'AbortError') {
+                            throw new Error('Request timed out. The AI is taking too long. Please try again.');
+                        }
+                        
+                        if (lastError && (lastError.message.includes('Failed to fetch') || lastError.message.includes('NetworkError'))) {
+                            throw new Error('⚠️ API Endpoint Not Found\n\nThe /api/chat endpoint is not accessible. Please ensure:\n\n1. The api/chat.js file exists in your project\n2. The project is deployed on Vercel\n3. Check Vercel Functions tab for deployment status\n4. Make sure you\'ve redeployed after adding the API file');
+                        }
+                        
+                        throw new Error(`Connection error: ${lastError ? lastError.message : 'Unknown error'}`);
+                    }
                     
                     clearTimeout(timeoutId);
+                    
+                    console.log('Response status:', response.status, response.statusText);
 
                     if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
+                        let errorData = {};
+                        try {
+                            errorData = await response.json();
+                        } catch (e) {
+                            console.error('Failed to parse error response:', e);
+                            errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+                        }
+                        
+                        console.error('API error response:', errorData);
+                        
                         let errorMessage = errorData.error || errorData.message || `HTTP ${response.status}`;
                         
                         // Handle specific error cases
                         if (response.status === 500) {
                             if (errorMessage.includes('Missing') || errorMessage.includes('environment variable')) {
-                                throw new Error('Server configuration error: API key not set in Vercel. Please check environment variables.');
+                                throw new Error('⚠️ Server Configuration Error\n\nAPI key not set in Vercel. Please:\n1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n2. Add OPEN_API with your OpenAI API key\n3. Redeploy your project');
                             } else if (errorMessage.includes('Invalid API key') || errorMessage.includes('Incorrect API key')) {
-                                throw new Error('Invalid API key in Vercel. Please check your OPEN_API environment variable.');
+                                throw new Error('⚠️ Invalid API Key\n\nYour OPEN_API environment variable in Vercel is incorrect. Please:\n1. Check that the API key starts with "sk-"\n2. Verify it\'s correct in Vercel Settings\n3. Redeploy after updating');
                             }
+                        } else if (response.status === 404) {
+                            throw new Error('⚠️ API Endpoint Not Found\n\nThe /api/chat endpoint is not available. Please ensure:\n1. The api/chat.js file exists in your project\n2. The project is properly deployed on Vercel\n3. Check Vercel Functions logs for errors');
                         }
                         
                         // Show user-friendly error
                         if (errorData.details?.hint) {
-                            errorMessage += ` ${errorData.details.hint}`;
+                            errorMessage += `\n\n💡 ${errorData.details.hint}`;
                         }
                         
                         throw new Error(errorMessage);
                     }
 
-                    const data = await response.json();
+                    let data;
+                    try {
+                        data = await response.json();
+                    } catch (e) {
+                        console.error('Failed to parse response:', e);
+                        throw new Error('Invalid response format from server');
+                    }
+                    
+                    console.log('API response received:', data);
+                    
                     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-                        throw new Error('Invalid response from API');
+                        console.error('Invalid response structure:', data);
+                        throw new Error('Invalid response structure from API. Please check server logs.');
                     }
 
-                    return data.choices[0].message.content || 'I apologize, but I could not generate a response.';
+                    const content = data.choices[0].message.content || 'I apologize, but I could not generate a response.';
+                    console.log('AI response content length:', content.length);
+                    return content;
                 } catch (error) {
                     console.error('AI API error:', error);
+                    console.error('Error details:', {
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
+                    });
                     
                     // Handle timeout
-                    if (error.name === 'AbortError' || error.message.includes('timeout')) {
-                        throw new Error('Request timed out. The AI is taking too long. Please try a shorter message or try again.');
+                    if (error.name === 'AbortError' || error.message.includes('timeout') || error.message.includes('timed out')) {
+                        throw new Error('⏱️ Request timed out. The AI is taking too long. Please try a shorter message or try again.');
+                    }
+                    
+                    // Re-throw if it's already a formatted error
+                    if (error.message.includes('⚠️') || error.message.includes('💡')) {
+                        throw error;
                     }
                     
                     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-                        throw new Error('Invalid API key. Please check your OpenAI API key in settings.');
+                        throw new Error('⚠️ Authentication Error\n\nInvalid API key. Please check your OPEN_API environment variable in Vercel.');
                     } else if (error.message.includes('429') || error.message.includes('rate limit')) {
-                        throw new Error('Rate limit exceeded. Please try again in a moment.');
-                    } else if (error.message.includes('504') || error.message.includes('timeout')) {
-                        throw new Error('Request timed out. Please try again with a shorter message.');
-                    } else if (error.message.includes('network') || error.message.includes('fetch')) {
-                        throw new Error('Network error. Please check your internet connection.');
+                        throw new Error('⏸️ Rate limit exceeded. Please try again in a moment.');
+                    } else if (error.message.includes('504') || error.message.includes('Gateway Timeout')) {
+                        throw new Error('⏱️ Server timeout. Please try again with a shorter message.');
+                    } else if (error.message.includes('network') || error.message.includes('fetch') || error.message.includes('NetworkError')) {
+                        throw new Error('🌐 Network error. Please check your internet connection and ensure the API is deployed.');
                     }
-                    throw error;
+                    
+                    // Generic error fallback
+                    throw new Error(`❌ ${error.message || 'An unexpected error occurred. Please check the browser console for details.'}`);
                 }
             }
 

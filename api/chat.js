@@ -1,5 +1,6 @@
 // Vercel Serverless Function for OpenAI API
 // This keeps the API key secure on the server side
+
 export default async function handler(req, res) {
   // Enable CORS for all origins
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
   // Get API key from environment variable (supports both names)
   const apiKey = process.env.OPENAI_API_KEY || process.env.OPEN_API;
   
-  // Debug logging (remove in production if needed)
+  // Debug logging
   console.log("Environment check:", {
     hasOpenAIKey: !!process.env.OPENAI_API_KEY,
     hasOpenAPI: !!process.env.OPEN_API,
@@ -31,7 +32,10 @@ export default async function handler(req, res) {
     console.error("OPENAI_API_KEY or OPEN_API environment variable is not set");
     return res.status(500).json({ 
       error: "Server configuration error: Missing OPENAI_API_KEY or OPEN_API environment variable",
-      details: "Please add your OpenAI API key as an environment variable in Vercel"
+      details: {
+        hint: "Please add your OpenAI API key as an environment variable in Vercel",
+        check: "Go to Vercel Dashboard > Your Project > Settings > Environment Variables"
+      }
     });
   }
   
@@ -40,7 +44,10 @@ export default async function handler(req, res) {
     console.error("Invalid API key format - should start with 'sk-'");
     return res.status(500).json({ 
       error: "Invalid API key format. OpenAI API keys should start with 'sk-'",
-      details: "Please check your environment variable in Vercel"
+      details: {
+        hint: "Please check your environment variable in Vercel",
+        check: "Make sure the API key value starts with 'sk-'"
+      }
     });
   }
 
@@ -51,14 +58,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log("Calling OpenAI API with", messages.length, "messages");
+    
     // Use faster model and optimized settings for speed
-    let model = "gpt-3.5-turbo"; // Faster than gpt-4o-mini
+    let model = "gpt-3.5-turbo";
     
-    // Create timeout controller
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
-    
-    // Call OpenAI API with timeout
+    // Call OpenAI API
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -68,25 +73,23 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: model,
         messages: messages,
-        max_tokens: 1000, // Reduced for faster responses
-        temperature: 0.7, // Slightly lower for faster generation
+        max_tokens: 1000,
+        temperature: 0.7,
         top_p: 0.9,
         frequency_penalty: 0.2,
         presence_penalty: 0.2,
         stream: false
-      }),
-      signal: controller.signal
+      })
     });
-    
-    clearTimeout(timeoutId);
 
     const data = await response.json();
+    
+    console.log("OpenAI API response status:", response.status);
 
     // Handle OpenAI API errors
     if (!response.ok) {
       console.error("OpenAI API error:", JSON.stringify(data, null, 2));
       
-      // Better error messages
       let errorMessage = data.error?.message || "OpenAI API error";
       let errorDetails = data.error;
       
@@ -105,10 +108,11 @@ export default async function handler(req, res) {
       });
     }
 
-    // Return successful response
+    console.log("OpenAI API success, returning response");
     return res.status(200).json(data);
   } catch (error) {
     console.error("OpenAI API error:", error);
+    console.error("Error stack:", error.stack);
     
     // Handle timeout
     if (error.name === 'AbortError' || error.message.includes('timeout')) {
@@ -120,7 +124,11 @@ export default async function handler(req, res) {
     
     return res.status(500).json({ 
       error: "Failed to communicate with OpenAI API",
-      message: error.message 
+      message: error.message,
+      details: {
+        hint: "Check your internet connection and OpenAI API status",
+        check: "Visit https://status.openai.com to check API status"
+      }
     });
   }
 }
