@@ -953,6 +953,33 @@
             pointer-events: auto;
         }
 
+        .jump-to-input {
+            position: fixed;
+            right: 18px;
+            bottom: 90px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 1200;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .jump-to-input:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 14px 36px rgba(99, 102, 241, 0.6);
+        }
+
+        .jump-to-input:active {
+            transform: translateY(0) scale(0.97);
+        }
+
         .chat-form {
             display: flex;
             gap: 12px;
@@ -1619,6 +1646,8 @@
 
     <div class="floating-particles" id="particles"></div>
     <div class="floating-particles" id="particles"></div>
+    <!-- Quick jump to input bar -->
+    <button class="jump-to-input" id="jump-to-input" title="Jump to message box">+</button>
     <div class="chat-container">
         <div class="chat-sidebar" id="chat-sidebar">
             <div class="sidebar-resize-handle" id="sidebar-resize-handle"></div>
@@ -2547,6 +2576,17 @@
             createParticles();
             const aiChat = new AIChat();
             new SidebarManager();
+            
+            // Jump-to-input helper
+            const jumpBtn = document.getElementById('jump-to-input');
+            if (jumpBtn) {
+                jumpBtn.addEventListener('click', () => {
+                    aiChat.ensureInputVisible();
+                });
+            }
+            
+            // Ensure input visible on load
+            setTimeout(() => aiChat.ensureInputVisible(), 300);
             
             // EXTRA: Direct button initialization as fallback
             setTimeout(() => {
