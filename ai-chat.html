@@ -712,6 +712,8 @@
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: calc(100% - 320px);
             box-sizing: border-box;
+            position: relative;
+            z-index: 1;
         }
         
         .chat-sidebar.collapsed ~ .chat-main {
@@ -1022,7 +1024,9 @@
         }
 
         .chat-input-container {
-            display: flex;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
             gap: 0;
             padding: 12px 12px 14px;
             background: linear-gradient(180deg, 
@@ -1031,13 +1035,13 @@
             backdrop-filter: blur(40px) saturate(180%);
             border-top: 2px solid rgba(99, 102, 241, 0.3);
             border-radius: 18px 18px 0 0;
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            max-width: none;
-            z-index: 1100;
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            z-index: 9999 !important;
             flex-shrink: 0;
             margin: 0 auto;
             box-shadow: 
@@ -1046,7 +1050,7 @@
                 0 0 0 1px rgba(99, 102, 241, 0.1) inset,
                 0 18px 38px rgba(0,0,0,0.4);
             animation: inputSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: auto;
+            pointer-events: auto !important;
         }
 
         .jump-to-input {
@@ -1119,6 +1123,10 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(20px);
             line-height: 1.5;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
 
         .input-actions {
@@ -2288,7 +2296,10 @@
                         if (this.sendBtn) {
                             this.sendBtn.disabled = false;
                         }
-                        this.ensureInputVisible();
+                        // Force input to be visible after response
+                        setTimeout(() => {
+                            this.ensureInputVisible();
+                        }, 100);
                     }).catch(error => {
                         console.error('Error in getAIResponse:', error);
                         this.hideTyping();
@@ -2299,7 +2310,10 @@
                         if (this.sendBtn) {
                             this.sendBtn.disabled = false;
                         }
-                        this.ensureInputVisible();
+                        // Force input to be visible after error
+                        setTimeout(() => {
+                            this.ensureInputVisible();
+                        }, 100);
                     });
                 };
 
@@ -2621,6 +2635,26 @@
 
             ensureInputVisible() {
                 try {
+                    // Force input container to be visible
+                    const inputContainer = document.querySelector('.chat-input-container');
+                    if (inputContainer) {
+                        inputContainer.style.display = 'flex';
+                        inputContainer.style.visibility = 'visible';
+                        inputContainer.style.opacity = '1';
+                        inputContainer.style.zIndex = '9999';
+                        inputContainer.style.position = 'fixed';
+                        inputContainer.style.bottom = '0';
+                        inputContainer.style.pointerEvents = 'auto';
+                    }
+                    
+                    // Force input field to be visible
+                    if (this.input) {
+                        this.input.style.display = 'block';
+                        this.input.style.visibility = 'visible';
+                        this.input.style.opacity = '1';
+                        this.input.style.pointerEvents = 'auto';
+                    }
+                    
                     if (this.messagesContainer) {
                         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
                     }
@@ -2875,6 +2909,23 @@
             const aiChat = new AIChat();
             new SidebarManager();
             
+            // Force input container to always be visible
+            const forceInputVisible = () => {
+                const inputContainer = document.querySelector('.chat-input-container');
+                if (inputContainer) {
+                    inputContainer.style.display = 'flex';
+                    inputContainer.style.visibility = 'visible';
+                    inputContainer.style.opacity = '1';
+                    inputContainer.style.zIndex = '9999';
+                    inputContainer.style.position = 'fixed';
+                    inputContainer.style.bottom = '0';
+                }
+            };
+            
+            // Run immediately and on intervals
+            forceInputVisible();
+            setInterval(forceInputVisible, 1000);
+            
             // Jump-to-input helper
             const jumpBtn = document.getElementById('jump-to-input');
             if (jumpBtn) {
@@ -2884,7 +2935,10 @@
             }
             
             // Ensure input visible on load
-            setTimeout(() => aiChat.ensureInputVisible(), 300);
+            setTimeout(() => {
+                forceInputVisible();
+                aiChat.ensureInputVisible();
+            }, 300);
             
             // EXTRA: Direct button initialization as fallback
             setTimeout(() => {
