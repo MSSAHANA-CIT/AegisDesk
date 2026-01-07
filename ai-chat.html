@@ -437,6 +437,80 @@
             backdrop-filter: blur(10px);
         }
 
+        .chat-search-container {
+            margin-top: 16px;
+            position: relative;
+        }
+
+        .chat-search-input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-search-input:focus {
+            border-color: rgba(99, 102, 241, 0.6);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.15),
+                0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .chat-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .chat-search-input:focus + .chat-search-icon {
+            color: var(--primary-light);
+        }
+
+        .chat-search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .chat-search-clear.visible {
+            display: flex;
+        }
+
+        .chat-search-clear:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary-light);
+        }
+
         .chat-new-btn {
             width: 100%;
             padding: 14px 18px;
@@ -1745,6 +1819,19 @@
                     </svg>
                     New Chat
                 </button>
+                <div class="chat-search-container">
+                    <input type="text" class="chat-search-input" id="chat-search-input" placeholder="Search chats...">
+                    <svg class="chat-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <button class="chat-search-clear" id="chat-search-clear" title="Clear search">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="chat-list" id="chat-list">            </div>
         </div>
@@ -1905,11 +1992,25 @@
                 storage.set('currentChatId', this.currentChatId);
             }
             
-            renderChatList() {
+            renderChatList(searchQuery = '') {
                 const chatList = document.getElementById('chat-list');
                 if (!chatList) return;
                 
-                chatList.innerHTML = this.chats.map(chat => `
+                // Filter chats based on search query
+                let filteredChats = this.chats;
+                if (searchQuery && searchQuery.trim()) {
+                    const query = searchQuery.toLowerCase().trim();
+                    filteredChats = this.chats.filter(chat => {
+                        // Search in title
+                        if (chat.title.toLowerCase().includes(query)) return true;
+                        // Search in messages
+                        return chat.messages.some(msg => 
+                            msg.content.toLowerCase().includes(query)
+                        );
+                    });
+                }
+                
+                chatList.innerHTML = filteredChats.map(chat => `
                     <div class="chat-item ${chat.id === this.currentChatId ? 'active' : ''}" data-chat-id="${chat.id}">
                         <div class="chat-item-title">${this.escapeHtml(chat.title)}</div>
                         <div class="chat-item-actions">
@@ -1918,6 +2019,15 @@
                         </div>
                     </div>
                 `).join('');
+                
+                // Show "No chats found" message if search returns no results
+                if (searchQuery && filteredChats.length === 0) {
+                    chatList.innerHTML = `
+                        <div style="padding: 24px; text-align: center; color: var(--text-muted);">
+                            <p>No chats found matching "${this.escapeHtml(searchQuery)}"</p>
+                        </div>
+                    `;
+                }
                 
                 // Attach event listeners
                 chatList.addEventListener('click', (e) => {
@@ -1944,7 +2054,10 @@
                 this.currentChatId = chatId;
                 this.saveChats();
                 this.loadHistory();
-                this.renderChatList();
+                // Get current search query to maintain filter
+                const searchInput = document.getElementById('chat-search-input');
+                const searchQuery = searchInput ? searchInput.value : '';
+                this.renderChatList(searchQuery);
             }
             
             renameChat(chatId) {
@@ -1956,7 +2069,10 @@
                 
                 chat.title = newTitle.trim();
                 this.saveChats();
-                this.renderChatList();
+                // Get current search query to maintain filter
+                const searchInput = document.getElementById('chat-search-input');
+                const searchQuery = searchInput ? searchInput.value : '';
+                this.renderChatList(searchQuery);
             }
             
             deleteChat(chatId) {
@@ -1976,8 +2092,55 @@
                     
                     this.saveChats();
                     this.loadHistory();
-                    this.renderChatList();
+                    // Get current search query to maintain filter
+                    const searchInput = document.getElementById('chat-search-input');
+                    const searchQuery = searchInput ? searchInput.value : '';
+                    this.renderChatList(searchQuery);
                 }
+            }
+
+            setupSearch() {
+                const searchInput = document.getElementById('chat-search-input');
+                const searchClear = document.getElementById('chat-search-clear');
+                
+                if (!searchInput) return;
+                
+                // Update clear button visibility
+                const updateClearButton = () => {
+                    if (searchClear) {
+                        if (searchInput.value.trim()) {
+                            searchClear.classList.add('visible');
+                        } else {
+                            searchClear.classList.remove('visible');
+                        }
+                    }
+                };
+                
+                // Search on input
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value;
+                    updateClearButton();
+                    this.renderChatList(query);
+                });
+                
+                // Clear search
+                if (searchClear) {
+                    searchClear.addEventListener('click', () => {
+                        searchInput.value = '';
+                        updateClearButton();
+                        this.renderChatList('');
+                        searchInput.focus();
+                    });
+                }
+                
+                // Clear search on Escape key
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        searchInput.value = '';
+                        updateClearButton();
+                        this.renderChatList('');
+                    }
+                });
             }
 
             init() {
@@ -2015,11 +2178,21 @@
                 // Render chat list
                 this.renderChatList();
                 
+                // Setup search functionality
+                this.setupSearch();
+                
                 // New chat button
                 if (this.newChatBtn) {
                     this.newChatBtn.addEventListener('click', () => {
                         this.createNewChat();
                         this.loadHistory();
+                        // Clear search when creating new chat
+                        const searchInput = document.getElementById('chat-search-input');
+                        if (searchInput) {
+                            searchInput.value = '';
+                            const searchClear = document.getElementById('chat-search-clear');
+                            if (searchClear) searchClear.classList.remove('visible');
+                        }
                         this.renderChatList();
                     });
                 }
