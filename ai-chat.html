@@ -925,7 +925,7 @@
 
         .chat-input-container {
             display: flex;
-            gap: 12px;
+            gap: 0;
             padding: 20px 24px;
             background: linear-gradient(180deg, 
                 rgba(15, 23, 42, 0.95) 0%, 
@@ -944,6 +944,12 @@
                 0 0 0 1px rgba(99, 102, 241, 0.1) inset;
             animation: inputSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: auto;
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 12px;
+            width: 100%;
         }
 
         @keyframes inputSlideUp {
@@ -1663,15 +1669,17 @@
                 </div>
             </div>
             <div class="chat-input-container">
-                <div class="chat-input-wrapper">
-                    <textarea class="chat-input" id="chat-input" placeholder="Message AegisDesk AI..." rows="1"></textarea>
-                </div>
-                <button type="button" class="chat-send" id="chat-send" aria-label="Send message">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polyline points="22 2 15 22 11 13 2 9 22 2"></polyline>
-                    </svg>
-                </button>
+                <form id="chat-form" class="chat-form">
+                    <div class="chat-input-wrapper">
+                        <textarea class="chat-input" id="chat-input" placeholder="Message AegisDesk AI..." rows="1"></textarea>
+                    </div>
+                    <button type="submit" class="chat-send" id="chat-send" aria-label="Send message">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polyline points="22 2 15 22 11 13 2 9 22 2"></polyline>
+                        </svg>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -1839,6 +1847,7 @@
                 this.messagesContainer = document.getElementById('chat-messages');
                 this.input = document.getElementById('chat-input');
                 this.sendBtn = document.getElementById('chat-send');
+                this.form = document.getElementById('chat-form');
                 this.welcomeScreen = document.getElementById('welcome-screen');
                 this.apiKeyModal = document.getElementById('api-key-modal');
                 this.newChatBtn = document.getElementById('chat-new-btn');
@@ -1848,12 +1857,16 @@
                     messagesContainer: !!this.messagesContainer,
                     input: !!this.input,
                     sendBtn: !!this.sendBtn,
+                    form: !!this.form,
                     welcomeScreen: !!this.welcomeScreen,
                     newChatBtn: !!this.newChatBtn
                 });
 
                 if (!this.sendBtn) {
                     console.error('ERROR: Send button not found!');
+                }
+                if (!this.form) {
+                    console.error('ERROR: Chat form not found!');
                 }
                 if (!this.input) {
                     console.error('ERROR: Input field not found!');
@@ -1975,6 +1988,15 @@
                         }
                     });
                 };
+
+                // Form submit handler (MOST RELIABLE PATH)
+                if (this.form) {
+                    this.form.addEventListener('submit', (e) => {
+                        console.log('Form submit triggered');
+                        e.preventDefault();
+                        sendMessage();
+                    });
+                }
 
                 // Add click event to send button - MULTIPLE METHODS TO ENSURE IT WORKS
                 if (this.sendBtn) {
