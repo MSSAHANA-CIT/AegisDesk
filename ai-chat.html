@@ -1949,8 +1949,17 @@
                         let errorMessage = errorData.error || errorData.message || `HTTP ${response.status}`;
                         
                         // Handle specific error cases
-                        if (response.status === 500 && errorMessage.includes('Missing')) {
-                            throw new Error('Server configuration error. Please contact the administrator.');
+                        if (response.status === 500) {
+                            if (errorMessage.includes('Missing') || errorMessage.includes('environment variable')) {
+                                throw new Error('Server configuration error: API key not set in Vercel. Please check environment variables.');
+                            } else if (errorMessage.includes('Invalid API key') || errorMessage.includes('Incorrect API key')) {
+                                throw new Error('Invalid API key in Vercel. Please check your OPEN_API environment variable.');
+                            }
+                        }
+                        
+                        // Show user-friendly error
+                        if (errorData.details?.hint) {
+                            errorMessage += ` ${errorData.details.hint}`;
                         }
                         
                         throw new Error(errorMessage);

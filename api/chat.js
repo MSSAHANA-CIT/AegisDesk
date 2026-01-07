@@ -18,9 +18,30 @@ export default async function handler(req, res) {
 
   // Get API key from environment variable (supports both names)
   const apiKey = process.env.OPENAI_API_KEY || process.env.OPEN_API;
+  
+  // Debug logging (remove in production if needed)
+  console.log("Environment check:", {
+    hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+    hasOpenAPI: !!process.env.OPEN_API,
+    keyLength: apiKey ? apiKey.length : 0,
+    keyPrefix: apiKey ? apiKey.substring(0, 7) : 'none'
+  });
+  
   if (!apiKey) {
     console.error("OPENAI_API_KEY or OPEN_API environment variable is not set");
-    return res.status(500).json({ error: "Server configuration error: Missing OPENAI_API_KEY or OPEN_API environment variable" });
+    return res.status(500).json({ 
+      error: "Server configuration error: Missing OPENAI_API_KEY or OPEN_API environment variable",
+      details: "Please add your OpenAI API key as an environment variable in Vercel"
+    });
+  }
+  
+  // Validate API key format
+  if (!apiKey.startsWith('sk-')) {
+    console.error("Invalid API key format - should start with 'sk-'");
+    return res.status(500).json({ 
+      error: "Invalid API key format. OpenAI API keys should start with 'sk-'",
+      details: "Please check your environment variable in Vercel"
+    });
   }
 
   // Get messages from request body
@@ -63,10 +84,24 @@ export default async function handler(req, res) {
 
     // Handle OpenAI API errors
     if (!response.ok) {
-      console.error("OpenAI API error:", data);
+      console.error("OpenAI API error:", JSON.stringify(data, null, 2));
+      
+      // Better error messages
+      let errorMessage = data.error?.message || "OpenAI API error";
+      let errorDetails = data.error;
+      
+      // Handle specific error cases
+      if (data.error?.code === 'invalid_api_key' || errorMessage.includes('Incorrect API key')) {
+        errorMessage = "Invalid API key. Please check your OPEN_API environment variable in Vercel.";
+        errorDetails = {
+          hint: "Make sure the API key starts with 'sk-' and is correctly set in Vercel project settings",
+          check: "Go to Vercel Dashboard > Your Project > Settings > Environment Variables"
+        };
+      }
+      
       return res.status(response.status).json({
-        error: data.error?.message || "OpenAI API error",
-        details: data.error
+        error: errorMessage,
+        details: errorDetails
       });
     }
 
