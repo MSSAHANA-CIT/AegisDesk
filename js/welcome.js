@@ -1,5 +1,42 @@
-// Welcome Page Interactions
+// Welcome Page Interactions - Fixed Timezone Logic
 document.addEventListener('DOMContentLoaded', () => {
+    // Boot sequence state
+    let bootComplete = false;
+    
+    // Initialize boot sequence
+    function initBootSequence() {
+        document.body.classList.add('boot-loading');
+        
+        // Show boot text
+        const bootText = document.createElement('div');
+        bootText.className = 'boot-text-overlay';
+        bootText.innerHTML = '<div class="boot-text-line">Synchronizing time...</div>';
+        document.body.appendChild(bootText);
+        
+        // Complete boot after delay
+        setTimeout(() => {
+            bootText.classList.add('fade-out');
+            setTimeout(() => {
+                bootText.remove();
+                document.body.classList.remove('boot-loading');
+                document.body.classList.add('boot-complete');
+                bootComplete = true;
+                
+                // Fade in clocks
+                const clockContainer = document.querySelector('.hero-clock-container');
+                if (clockContainer) {
+                    clockContainer.style.opacity = '0';
+                    clockContainer.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        clockContainer.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                        clockContainer.style.opacity = '1';
+                        clockContainer.style.transform = 'translateY(0)';
+                    }, 300);
+                }
+            }, 500);
+        }, 1800);
+    }
+    
     // Initialize clock numbers
     function initClockNumbers() {
         const numbers12 = document.getElementById('clock-numbers-12');
@@ -23,40 +60,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Initialize numbers on page load
-    initClockNumbers();
-    
-    // Clock functionality - India time
-    function updateClock() {
-        // Get India time (Asia/Kolkata)
-        const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const seconds = now.getSeconds();
+    // Get time in specific timezone using Intl.DateTimeFormat
+    function getTimeInTimezone(timezone) {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: timezone,
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: false
+        });
         
-        // Update clock hands - using 24-hour format for rotation
+        const parts = formatter.formatToParts(now);
+        const hours = parseInt(parts.find(p => p.type === 'hour').value);
+        const minutes = parseInt(parts.find(p => p.type === 'minute').value);
+        const seconds = parseInt(parts.find(p => p.type === 'second').value);
+        
+        return { hours, minutes, seconds, date: now };
+    }
+    
+    // Clock functionality - India time (Asia/Kolkata)
+    function updateClock() {
+        // Get time once per update cycle
+        const timeData = getTimeInTimezone('Asia/Kolkata');
+        const { hours, minutes, seconds, date } = timeData;
+        
+        // Update clock hands - using 12-hour format for analog display
         const hoursHand = document.getElementById('clock-hours');
         const minutesHand = document.getElementById('clock-minutes');
         const secondsHand = document.getElementById('clock-seconds');
         const timeText12 = document.getElementById('clock-time-12');
         const dateText = document.getElementById('clock-date-text');
         
-        // Hour hand: rotates based on 24-hour format (full 360 degrees)
+        // Hour hand: 12-hour format (360/12 = 30 degrees per hour)
+        // Also account for minutes (hour hand moves between hours)
         if (hoursHand) {
-            const hoursDeg24 = (hours * 15) + (minutes * 0.25); // 360/24 = 15 degrees per hour
-            hoursHand.style.transform = `rotate(${hoursDeg24}deg)`;
+            const hours12 = hours % 12 || 12; // Convert to 12-hour format
+            const hourAngle = (hours12 * 30) + (minutes * 0.5); // 30 degrees per hour, 0.5 degrees per minute
+            hoursHand.style.transform = `rotate(${hourAngle}deg)`;
         }
         
         // Minute hand: rotates 360 degrees per hour
         if (minutesHand) {
-            const minutesDeg = (minutes * 6) + (seconds * 0.1); // 360/60 = 6 degrees per minute
-            minutesHand.style.transform = `rotate(${minutesDeg}deg)`;
+            const minuteAngle = (minutes * 6) + (seconds * 0.1); // 360/60 = 6 degrees per minute, 0.1 degrees per second
+            minutesHand.style.transform = `rotate(${minuteAngle}deg)`;
         }
         
         // Second hand: rotates 360 degrees per minute
         if (secondsHand) {
-            const secondsDeg = seconds * 6; // 360/60 = 6 degrees per second
-            secondsHand.style.transform = `rotate(${secondsDeg}deg)`;
+            const secondAngle = seconds * 6; // 360/60 = 6 degrees per second
+            secondsHand.style.transform = `rotate(${secondAngle}deg)`;
         }
         
         // Update 12-hour time display
@@ -67,15 +120,32 @@ document.addEventListener('DOMContentLoaded', () => {
             timeText12.textContent = timeString12;
         }
         
+        // Update date display
         if (dateText) {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            dateText.textContent = now.toLocaleDateString('en-US', options);
+            const dateFormatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Kolkata',
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            dateText.textContent = dateFormatter.format(date);
         }
     }
     
-    // Update clock immediately and then every second
+    // Initialize numbers on page load
+    initClockNumbers();
+    
+    // Start boot sequence
+    initBootSequence();
+    
+    // Update clock immediately and then every second (precise timing)
     updateClock();
-    setInterval(updateClock, 1000);
+    setInterval(() => {
+        if (bootComplete) {
+            updateClock();
+        }
+    }, 1000);
     
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -99,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && bootComplete) {
                 entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateY(0)';
             }
@@ -134,6 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add parallax effect to orbs
     window.addEventListener('mousemove', (e) => {
+        if (!bootComplete) return;
+        
         const orbs = document.querySelectorAll('.gradient-orb');
         const mouseX = e.clientX / window.innerWidth;
         const mouseY = e.clientY / window.innerHeight;
@@ -146,4 +218,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

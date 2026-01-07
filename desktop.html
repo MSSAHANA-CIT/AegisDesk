@@ -4,18 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AegisDesk - AI-Powered Desktop OS</title>
+    <meta name="description" content="AI-Powered Unified Desktop Operating System">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/motion-system.css">
+    <link rel="stylesheet" href="styles/boot-sequence.css">
+    <link rel="stylesheet" href="styles/parallax-desktop.css">
     <link rel="stylesheet" href="styles/window.css">
     <link rel="stylesheet" href="styles/apps.css">
+    <link rel="stylesheet" href="styles/zoom-responsive.css">
+    <link rel="stylesheet" href="styles/desktop-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Desktop Background -->
+    <!-- Boot Sequence Overlay -->
+    <div class="boot-overlay" id="boot-overlay">
+        <div class="boot-grid"></div>
+        <div class="boot-scanline"></div>
+        <div class="boot-logo">AEGIS DESK</div>
+        <div class="boot-text">
+            <span class="boot-text-line">Initializing Window Manager...</span>
+            <span class="boot-text-line">Restoring workspace...</span>
+            <span class="boot-text-line">AI Copilot online.</span>
+        </div>
+        <div class="boot-loader">
+            <div class="boot-loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- Desktop Background with Parallax Layers -->
     <div class="desktop-background">
-        <div class="wallpaper-gradient"></div>
-        <div class="grid-pattern"></div>
+        <div class="desktop-layer-far"></div>
+        <div class="desktop-layer-mid"></div>
+        <div class="desktop-layer-near">
+            <div class="desktop-bokeh"></div>
+            <div class="desktop-bokeh"></div>
+            <div class="desktop-bokeh"></div>
+        </div>
+    </div>
+    
+    <!-- Cursor Glow -->
+    <div class="cursor-glow" id="cursor-glow"></div>
+
+    <!-- Desktop Icon Carousel -->
+    <div class="desktop-icon-carousel" id="desktop-icon-carousel">
+        <!-- AEGIS DESK Title -->
+        <div class="desktop-title-container">
+            <div class="desktop-title-wrapper">
+                <h1 class="desktop-title" id="desktop-title">
+                    <span class="title-letter" data-letter="A">A</span>
+                    <span class="title-letter" data-letter="E">E</span>
+                    <span class="title-letter" data-letter="G">G</span>
+                    <span class="title-letter" data-letter="I">I</span>
+                    <span class="title-letter" data-letter="S">S</span>
+                    <span class="title-space"></span>
+                    <span class="title-letter" data-letter="D">D</span>
+                    <span class="title-letter" data-letter="E">E</span>
+                    <span class="title-letter" data-letter="S">S</span>
+                    <span class="title-letter" data-letter="K">K</span>
+                </h1>
+                <div class="desktop-subtitle">
+                    <span class="subtitle-text">AI-Powered Desktop OS</span>
+                    <div class="subtitle-underline"></div>
+                </div>
+            </div>
+            <div class="title-glow-effect"></div>
+            <div class="title-particles"></div>
+        </div>
+        
+        <div class="carousel-container">
+            <div class="carousel-track" id="carousel-track">
+                <!-- Icons will be dynamically inserted here -->
+            </div>
+        </div>
+        <div class="carousel-nav carousel-nav-left" id="carousel-nav-left">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </div>
+        <div class="carousel-nav carousel-nav-right" id="carousel-nav-right">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Icon Enlargement Modal -->
+    <div class="icon-modal-overlay" id="icon-modal-overlay">
+        <div class="icon-modal">
+            <div class="icon-modal-icon" id="icon-modal-icon"></div>
+            <div class="icon-modal-name" id="icon-modal-name"></div>
+            <div class="icon-modal-actions">
+                <button class="icon-modal-btn icon-modal-btn-open" id="icon-modal-open">Open</button>
+                <button class="icon-modal-btn icon-modal-btn-cancel" id="icon-modal-cancel">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <!-- Taskbar -->
@@ -74,7 +160,7 @@
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
-                <input type="text" placeholder="Search or ask AI..." id="global-search">
+                <input type="text" placeholder="Search Google, apps, or ask AI..." id="global-search">
             </div>
         </div>
         <div class="taskbar-right">
@@ -92,6 +178,23 @@
         <div class="apps-menu-header">
             <h2>Applications</h2>
             <button class="close-menu" data-action="hide-apps-menu">&times;</button>
+        </div>
+        <div class="icon-size-controls">
+            <label>Icon Size:</label>
+            <div class="icon-size-buttons">
+                <button class="icon-size-btn" data-size="small">Small</button>
+                <button class="icon-size-btn active" data-size="medium">Medium</button>
+                <button class="icon-size-btn" data-size="large">Large</button>
+                <button class="icon-size-btn" data-size="extra-large">XL</button>
+            </div>
+            <button class="icon-size-btn" data-action="explore" style="margin-left: auto; background: linear-gradient(135deg, var(--accent), var(--primary)); color: white;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                Explore
+            </button>
         </div>
         <div class="apps-grid">
             <div class="app-tile" data-app="tasks">
@@ -122,7 +225,7 @@
                 </div>
                 <div class="app-tile-name">Weather</div>
             </div>
-            <div class="app-tile" data-app="ai-chat">
+            <div class="app-tile" data-app="ai-chat" data-url="ai-chat.html">
                 <div class="app-tile-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
@@ -131,6 +234,71 @@
                     </svg>
                 </div>
                 <div class="app-tile-name">AI Assistant</div>
+            </div>
+            <div class="app-tile" data-app="code-editor">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Code Editor</div>
+            </div>
+            <div class="app-tile" data-app="terminal">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                        <line x1="9" y1="20" x2="15" y2="20"></line>
+                        <line x1="12" y1="4" x2="12" y2="20"></line>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Terminal</div>
+            </div>
+            <div class="app-tile" data-app="music-player">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Music Player</div>
+            </div>
+            <div class="app-tile" data-app="drawing">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Drawing</div>
+            </div>
+            <div class="app-tile" data-app="system-monitor">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                </div>
+                <div class="app-tile-name">System Monitor</div>
+            </div>
+            <div class="app-tile" data-app="gallery">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Photo Gallery</div>
+            </div>
+            <div class="app-tile" data-app="playground">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Code Playground</div>
             </div>
             <div class="app-tile" data-app="browser" data-url="https://www.google.com">
                 <div class="app-tile-icon">
@@ -141,14 +309,6 @@
                     </svg>
                 </div>
                 <div class="app-tile-name">Browser</div>
-            </div>
-            <div class="app-tile" data-app="youtube" data-url="https://www.youtube.com">
-                <div class="app-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                    </svg>
-                </div>
-                <div class="app-tile-name">YouTube</div>
             </div>
             <div class="app-tile" data-app="bookmarks">
                 <div class="app-tile-icon">
@@ -207,8 +367,17 @@
     <!-- Scripts -->
     <script src="js/utils/storage.js"></script>
     <script src="js/utils/drag.js"></script>
+    <script src="js/core/os-store.js"></script>
+    <script src="js/core/command-bus.js"></script>
+    <script src="js/core/app-registry.js"></script>
+    <script src="js/core/boot-sequence.js"></script>
+    <script src="js/core/parallax-controller.js"></script>
     <script src="js/core/window-manager.js"></script>
+    <script src="js/core/ai-system.js"></script>
     <script src="js/core/desktop.js"></script>
+    <script src="js/core/desktop-icons.js"></script>
+    <!-- Markdown support for Notes -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
     <script src="js/apps/tasks.js"></script>
     <script src="js/apps/notes.js"></script>
     <script src="js/apps/weather.js"></script>
@@ -219,6 +388,13 @@
     <script src="js/apps/calendar.js"></script>
     <script src="js/apps/files.js"></script>
     <script src="js/apps/settings.js"></script>
+    <script src="js/apps/code-editor.js"></script>
+    <script src="js/apps/terminal.js"></script>
+    <script src="js/apps/music-player.js"></script>
+    <script src="js/apps/drawing.js"></script>
+    <script src="js/apps/system-monitor.js"></script>
+    <script src="js/apps/gallery.js"></script>
+    <script src="js/apps/playground.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

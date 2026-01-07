@@ -1,21 +1,41 @@
-// World Clock
+// World Clock - Fixed Timezone Logic with IANA Timezones
 class WorldClock {
     constructor() {
         this.timezones = [
-            { city: 'New York', tz: 'America/New_York', offset: -5 },
-            { city: 'London', tz: 'Europe/London', offset: 0 },
-            { city: 'Tokyo', tz: 'Asia/Tokyo', offset: 9 },
-            { city: 'Sydney', tz: 'Australia/Sydney', offset: 10 },
-            { city: 'Dubai', tz: 'Asia/Dubai', offset: 4 },
-            { city: 'Mumbai', tz: 'Asia/Kolkata', offset: 5.5 },
-            { city: 'Paris', tz: 'Europe/Paris', offset: 1 },
-            { city: 'Singapore', tz: 'Asia/Singapore', offset: 8 },
-            { city: 'Los Angeles', tz: 'America/Los_Angeles', offset: -8 },
-            { city: 'Beijing', tz: 'Asia/Shanghai', offset: 8 },
-            { city: 'Moscow', tz: 'Europe/Moscow', offset: 3 },
-            { city: 'Toronto', tz: 'America/Toronto', offset: -5 }
+            { city: 'New York', tz: 'America/New_York' },
+            { city: 'London', tz: 'Europe/London' },
+            { city: 'Tokyo', tz: 'Asia/Tokyo' },
+            { city: 'Sydney', tz: 'Australia/Sydney' },
+            { city: 'Dubai', tz: 'Asia/Dubai' },
+            { city: 'Mumbai', tz: 'Asia/Kolkata' },
+            { city: 'Paris', tz: 'Europe/Paris' },
+            { city: 'Singapore', tz: 'Asia/Singapore' },
+            { city: 'Los Angeles', tz: 'America/Los_Angeles' },
+            { city: 'Beijing', tz: 'Asia/Shanghai' },
+            { city: 'Moscow', tz: 'Europe/Moscow' },
+            { city: 'Toronto', tz: 'America/Toronto' }
         ];
+        this.lastUpdateTime = 0;
         this.init();
+    }
+
+    // Get time in specific timezone using Intl.DateTimeFormat
+    getTimeInTimezone(timezone) {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: timezone,
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: false
+        });
+        
+        const parts = formatter.formatToParts(now);
+        const hours = parseInt(parts.find(p => p.type === 'hour').value);
+        const minutes = parseInt(parts.find(p => p.type === 'minute').value);
+        const seconds = parseInt(parts.find(p => p.type === 'second').value);
+        
+        return { hours, minutes, seconds, date: now };
     }
 
     init() {
@@ -27,9 +47,16 @@ class WorldClock {
             grid.appendChild(clockItem);
         });
 
-        // Update clocks every second
-        setInterval(() => this.updateClocks(), 1000);
+        // Update clocks every second with precise timing
         this.updateClocks();
+        setInterval(() => {
+            const now = Date.now();
+            // Prevent drift by scheduling next update precisely
+            if (now - this.lastUpdateTime >= 1000) {
+                this.updateClocks();
+                this.lastUpdateTime = now;
+            }
+        }, 1000);
     }
 
     createClock(timezone, index) {
@@ -38,12 +65,15 @@ class WorldClock {
         item.dataset.timezone = timezone.tz;
         item.style.opacity = '0';
         item.style.transform = 'translateY(20px)';
-        item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        
+        // Stagger animation based on boot completion
+        const delay = 2000 + (index * 100); // Start after boot sequence
+        item.style.transition = `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`;
         
         setTimeout(() => {
             item.style.opacity = '1';
             item.style.transform = 'translateY(0)';
-        }, 100);
+        }, delay + 100);
 
         item.innerHTML = `
             <div class="world-clock-face">
@@ -81,23 +111,23 @@ class WorldClock {
     }
 
     updateClocks() {
+        // Calculate time once per update cycle
+        const now = new Date();
+        
         document.querySelectorAll('.world-clock-item').forEach(item => {
             const timezone = item.dataset.timezone;
-            // Use proper timezone conversion
-            const now = new Date(new Date().toLocaleString('en-US', { timeZone: timezone }));
-            
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
+            const timeData = this.getTimeInTimezone(timezone);
+            const { hours, minutes, seconds, date } = timeData;
             
             const hourHand = item.querySelector('[data-hand="hour"]');
             const minuteHand = item.querySelector('[data-hand="minute"]');
             const timeDisplay12 = item.querySelector('[data-time-12]');
             const dateDisplay = item.querySelector('[data-date]');
             
-            // Update hands - hour hand uses 24-hour format rotation
-            const hourAngle = (hours * 15) + (minutes * 0.25); // 360/24 = 15 degrees per hour
-            const minuteAngle = (minutes * 6) + (seconds * 0.1); // 360/60 = 6 degrees per minute
+            // Update hands - hour hand uses 12-hour format for analog display
+            const hours12 = hours % 12 || 12; // Convert to 12-hour format
+            const hourAngle = (hours12 * 30) + (minutes * 0.5); // 30 degrees per hour, 0.5 degrees per minute
+            const minuteAngle = (minutes * 6) + (seconds * 0.1); // 360/60 = 6 degrees per minute, 0.1 degrees per second
             
             if (hourHand) {
                 hourHand.style.transform = `rotate(${hourAngle}deg)`;
@@ -108,7 +138,6 @@ class WorldClock {
             
             // Update 12-hour time display
             if (timeDisplay12) {
-                const hours12 = hours % 12 || 12;
                 const ampm = hours >= 12 ? 'PM' : 'AM';
                 const timeString12 = `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
                 timeDisplay12.textContent = timeString12;
@@ -116,8 +145,13 @@ class WorldClock {
             
             // Update date display
             if (dateDisplay) {
-                const dateString = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                dateDisplay.textContent = dateString;
+                const dateFormatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: timezone,
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                dateDisplay.textContent = dateFormatter.format(date);
             }
         });
     }
@@ -127,4 +161,3 @@ class WorldClock {
 document.addEventListener('DOMContentLoaded', () => {
     new WorldClock();
 });
-

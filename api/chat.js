@@ -30,6 +30,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Try GPT-4o-mini first, fallback to gpt-3.5-turbo if not available
+    let model = "gpt-4o-mini";
+    
     // Call OpenAI API
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -38,10 +41,14 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: model, // Using GPT-4o-mini for better performance and cost efficiency
         messages: messages,
-        max_tokens: 500,
-        temperature: 0.7
+        max_tokens: 2000,
+        temperature: 0.8,
+        top_p: 0.9,
+        frequency_penalty: 0.3,
+        presence_penalty: 0.3,
+        stream: false
       }),
     });
 
@@ -50,6 +57,34 @@ export default async function handler(req, res) {
     // Handle OpenAI API errors
     if (!response.ok) {
       console.error("OpenAI API error:", data);
+      
+      // If model not found, try fallback to gpt-3.5-turbo
+      if (data.error?.code === 'model_not_found' || data.error?.message?.includes('model')) {
+        console.log("Falling back to gpt-3.5-turbo");
+        const fallbackResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: messages,
+            max_tokens: 2000,
+            temperature: 0.8,
+            top_p: 0.9,
+            frequency_penalty: 0.3,
+            presence_penalty: 0.3,
+            stream: false
+          }),
+        });
+        
+        const fallbackData = await fallbackResponse.json();
+        if (fallbackResponse.ok) {
+          return res.status(200).json(fallbackData);
+        }
+      }
+      
       return res.status(response.status).json({
         error: data.error?.message || "OpenAI API error",
         details: data.error

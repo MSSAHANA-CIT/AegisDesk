@@ -93,6 +93,20 @@ class SettingsApp {
                 </div>
 
                 <div class="settings-section">
+                    <div class="settings-section-title">Installation</div>
+                    <div class="settings-item">
+                        <div class="settings-item-label" style="flex: 1;">
+                            <div class="settings-item-title">Install AegisDesk</div>
+                            <div class="settings-item-desc">Install AegisDesk as a desktop app for offline access and better performance</div>
+                            <button id="install-pwa-btn" style="margin-top: 12px; padding: 10px 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 14px; font-weight: 500; display: none;">
+                                Install AegisDesk
+                            </button>
+                            <div id="pwa-install-status" style="margin-top: 8px; font-size: 12px; color: var(--text-muted);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
                     <div class="settings-section-title">About</div>
                     <div class="settings-item">
                         <div class="settings-item-label" style="flex: 1;">
@@ -151,6 +165,52 @@ class SettingsApp {
                 alert('All data has been cleared. The page will reload.');
                 location.reload();
             }
+        });
+
+        // PWA Install button
+        this.setupPWAInstall(content);
+    }
+
+    setupPWAInstall(content) {
+        const installBtn = content.querySelector('#install-pwa-btn');
+        const statusEl = content.querySelector('#pwa-install-status');
+        
+        if (!installBtn) return;
+
+        let deferredPrompt = null;
+
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+            if (statusEl) statusEl.textContent = 'AegisDesk can be installed on your device.';
+        });
+
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            installBtn.style.display = 'none';
+            if (statusEl) statusEl.textContent = '✓ AegisDesk is installed.';
+        }
+
+        // Install button click
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                if (statusEl) statusEl.textContent = 'Installation not available. Please use your browser\'s install option.';
+                return;
+            }
+
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                if (statusEl) statusEl.textContent = '✓ Installation started!';
+                installBtn.style.display = 'none';
+            } else {
+                if (statusEl) statusEl.textContent = 'Installation cancelled.';
+            }
+            
+            deferredPrompt = null;
         });
     }
 

@@ -49,7 +49,8 @@ class DragManager {
 
                 this.isResizing = true;
                 this.currentElement = element;
-                this.resizeHandle = handle.className.split(' ').find(cls => cls.includes('resize'));
+                const handleClasses = handle.className.split(' ');
+                this.resizeHandle = handleClasses.find(cls => cls.includes('nw') || cls.includes('ne') || cls.includes('sw') || cls.includes('se') || cls.includes('n') || cls.includes('s') || cls.includes('e') || cls.includes('w')) || '';
                 this.startX = e.clientX;
                 this.startY = e.clientY;
 
@@ -150,6 +151,11 @@ class DragManager {
         if (this.isDragging && this.currentElement) {
             this.currentElement.style.transition = '';
             this.currentElement.classList.remove('dragging');
+            
+            // Save window position if it's a window
+            if (this.currentElement.classList.contains('window') && typeof windowManager !== 'undefined') {
+                windowManager.saveWindowPosition(this.currentElement);
+            }
         }
         this.isDragging = false;
         this.currentElement = null;
@@ -160,6 +166,11 @@ class DragManager {
     stopResize = () => {
         if (this.isResizing && this.currentElement) {
             this.currentElement.style.transition = '';
+            
+            // Save window position if it's a window
+            if (this.currentElement.classList.contains('window') && typeof windowManager !== 'undefined') {
+                windowManager.saveWindowPosition(this.currentElement);
+            }
         }
         this.isResizing = false;
         this.currentElement = null;

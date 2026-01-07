@@ -45,21 +45,50 @@
 
     <!-- Hero Section -->
     <section class="founders-hero">
+        <div class="hero-particles" id="hero-particles"></div>
         <div class="container">
             <div class="hero-content">
                 <div class="hero-badge fade-in">
-                    <span class="badge-icon">👥</span>
-                    <span>Meet the Team</span>
+                    <span class="badge-icon">✨</span>
+                    <span class="badge-text">Meet the Visionaries</span>
+                    <div class="badge-glow"></div>
                 </div>
                 <h1 class="hero-title fade-in-delay">
-                    <span class="title-line">Built with Passion</span>
-                    <span class="title-line highlight">by Students</span>
+                    <span class="title-line">
+                        <span class="title-word" data-word="Built">Built</span>
+                        <span class="title-word" data-word="with">with</span>
+                        <span class="title-word highlight" data-word="Passion">Passion</span>
+                    </span>
+                    <span class="title-line">
+                        <span class="title-word" data-word="by">by</span>
+                        <span class="title-word highlight" data-word="Students">Students</span>
+                    </span>
                 </h1>
                 <p class="hero-description fade-in-delay-2">
                     AegisDesk was created by dedicated computer science students from Chennai Institute of Technology, 
                     combining their passion for innovation with cutting-edge AI technology.
                 </p>
+                <div class="hero-stats fade-in-delay-3">
+                    <div class="hero-stat">
+                        <div class="stat-value" data-target="2">0</div>
+                        <div class="stat-label">Innovators</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-value" data-target="100">0</div>
+                        <div class="stat-label">% Student Made</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-value" data-target="2024">0</div>
+                        <div class="stat-label">Year</div>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="hero-scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-wheel"></div>
+            </div>
+            <span>Scroll to explore</span>
         </div>
     </section>
 
@@ -68,47 +97,74 @@
         <div class="container">
             <div class="founders-grid">
                 <!-- Founder 1 -->
-                <div class="founder-card fade-in">
+                <div class="founder-card fade-in" data-founder="1">
                     <div class="founder-card-inner">
+                        <div class="card-glow"></div>
+                        <div class="card-pattern"></div>
                         <div class="founder-avatar">
                             <div class="avatar-circle">
                                 <span class="avatar-initials">SM</span>
+                                <div class="avatar-ring"></div>
+                                <div class="avatar-particles"></div>
                             </div>
                             <div class="avatar-glow"></div>
+                            <div class="avatar-shine"></div>
                         </div>
                         <div class="founder-info">
-                            <h2 class="founder-name">Sahana M S</h2>
-                            <p class="founder-role">Co-Founder & Developer</p>
+                            <div class="founder-badge-role">
+                                <span class="role-icon">💻</span>
+                                <span class="role-text">Co-Founder & Developer</span>
+                            </div>
+                            <h2 class="founder-name">
+                                <span class="name-text">Sahana M S</span>
+                                <div class="name-underline"></div>
+                            </h2>
                             <div class="founder-details">
-                                <div class="detail-item">
-                                    <span class="detail-icon">🎓</span>
-                                    <div>
+                                <div class="detail-item" data-animate>
+                                    <div class="detail-icon-wrapper">
+                                        <span class="detail-icon">🎓</span>
+                                        <div class="icon-glow"></div>
+                                    </div>
+                                    <div class="detail-content">
                                         <strong>Student ID:</strong>
                                         <span>24CS0492</span>
                                     </div>
                                 </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏫</span>
-                                    <div>
+                                <div class="detail-item" data-animate>
+                                    <div class="detail-icon-wrapper">
+                                        <span class="detail-icon">🏫</span>
+                                        <div class="icon-glow"></div>
+                                    </div>
+                                    <div class="detail-content">
                                         <strong>Institution:</strong>
                                         <span>Chennai Institute of Technology</span>
                                     </div>
                                 </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">📧</span>
-                                    <div>
+                                <div class="detail-item" data-animate>
+                                    <div class="detail-icon-wrapper">
+                                        <span class="detail-icon">📧</span>
+                                        <div class="icon-glow"></div>
+                                    </div>
+                                    <div class="detail-content">
                                         <strong>Email:</strong>
-                                        <a href="mailto:mssahana.cse2024@citchennai.net" class="email-link">mssahana.cse2024@citchennai.net</a>
+                                        <a href="mailto:mssahana.cse2024@citchennai.net" class="email-link">
+                                            <span>mssahana.cse2024@citchennai.net</span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M7 17L17 7M7 7h10v10"></path>
+                                            </svg>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                             <div class="founder-actions">
-                                <a href="mailto:mssahana.cse2024@citchennai.net" class="btn btn-primary">
+                                <a href="mailto:mssahana.cse2024@citchennai.net" class="btn btn-primary btn-email">
+                                    <span class="btn-bg"></span>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                         <polyline points="22,6 12,13 2,6"></polyline>
                                     </svg>
                                     <span>Send Email</span>
+                                    <div class="btn-ripple"></div>
                                 </a>
                             </div>
                         </div>
@@ -116,47 +172,74 @@
                 </div>
 
                 <!-- Founder 2 -->
-                <div class="founder-card fade-in-delay">
+                <div class="founder-card fade-in-delay" data-founder="2">
                     <div class="founder-card-inner">
+                        <div class="card-glow"></div>
+                        <div class="card-pattern"></div>
                         <div class="founder-avatar">
                             <div class="avatar-circle">
                                 <span class="avatar-initials">LS</span>
+                                <div class="avatar-ring"></div>
+                                <div class="avatar-particles"></div>
                             </div>
                             <div class="avatar-glow"></div>
+                            <div class="avatar-shine"></div>
                         </div>
                         <div class="founder-info">
-                            <h2 class="founder-name">Lakshana S</h2>
-                            <p class="founder-role">Co-Founder & Developer</p>
+                            <div class="founder-badge-role">
+                                <span class="role-icon">💻</span>
+                                <span class="role-text">Co-Founder & Developer</span>
+                            </div>
+                            <h2 class="founder-name">
+                                <span class="name-text">Lakshana S</span>
+                                <div class="name-underline"></div>
+                            </h2>
                             <div class="founder-details">
-                                <div class="detail-item">
-                                    <span class="detail-icon">🎓</span>
-                                    <div>
+                                <div class="detail-item" data-animate>
+                                    <div class="detail-icon-wrapper">
+                                        <span class="detail-icon">🎓</span>
+                                        <div class="icon-glow"></div>
+                                    </div>
+                                    <div class="detail-content">
                                         <strong>Student ID:</strong>
                                         <span>24CS0463</span>
                                     </div>
                                 </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏫</span>
-                                    <div>
+                                <div class="detail-item" data-animate>
+                                    <div class="detail-icon-wrapper">
+                                        <span class="detail-icon">🏫</span>
+                                        <div class="icon-glow"></div>
+                                    </div>
+                                    <div class="detail-content">
                                         <strong>Institution:</strong>
                                         <span>Chennai Institute of Technology</span>
                                     </div>
                                 </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">📧</span>
-                                    <div>
+                                <div class="detail-item" data-animate>
+                                    <div class="detail-icon-wrapper">
+                                        <span class="detail-icon">📧</span>
+                                        <div class="icon-glow"></div>
+                                    </div>
+                                    <div class="detail-content">
                                         <strong>Email:</strong>
-                                        <a href="mailto:lakshanas.cse2024@citchennai.net" class="email-link">lakshanas.cse2024@citchennai.net</a>
+                                        <a href="mailto:lakshanas.cse2024@citchennai.net" class="email-link">
+                                            <span>lakshanas.cse2024@citchennai.net</span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M7 17L17 7M7 7h10v10"></path>
+                                            </svg>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                             <div class="founder-actions">
-                                <a href="mailto:lakshanas.cse2024@citchennai.net" class="btn btn-primary">
+                                <a href="mailto:lakshanas.cse2024@citchennai.net" class="btn btn-primary btn-email">
+                                    <span class="btn-bg"></span>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                         <polyline points="22,6 12,13 2,6"></polyline>
                                     </svg>
                                     <span>Send Email</span>
+                                    <div class="btn-ripple"></div>
                                 </a>
                             </div>
                         </div>
@@ -166,7 +249,11 @@
 
             <!-- About Section -->
             <div class="about-project fade-in-delay-3">
-                <h2 class="section-title">About the Project</h2>
+                <div class="about-glow"></div>
+                <h2 class="section-title">
+                    <span class="title-main">About the Project</span>
+                    <div class="title-line-decoration"></div>
+                </h2>
                 <p class="project-description">
                     AegisDesk represents our vision of a unified, AI-powered desktop experience. 
                     As computer science students at Chennai Institute of Technology, we combined our 
@@ -174,20 +261,32 @@
                     simplifies digital life management.
                 </p>
                 <div class="project-stats">
-                    <div class="stat-card">
-                        <div class="stat-icon">💡</div>
-                        <div class="stat-number">2</div>
+                    <div class="stat-card" data-stat="1">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon">💡</div>
+                            <div class="stat-icon-glow"></div>
+                        </div>
+                        <div class="stat-number" data-target="2">0</div>
                         <div class="stat-label">Innovators</div>
+                        <div class="stat-progress"></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🚀</div>
-                        <div class="stat-number">6+</div>
+                    <div class="stat-card" data-stat="2">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon">🚀</div>
+                            <div class="stat-icon-glow"></div>
+                        </div>
+                        <div class="stat-number" data-target="15">0</div>
                         <div class="stat-label">Features</div>
+                        <div class="stat-progress"></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🎯</div>
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Student Made</div>
+                    <div class="stat-card" data-stat="3">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-icon-glow"></div>
+                        </div>
+                        <div class="stat-number" data-target="100">0</div>
+                        <div class="stat-label">% Student Made</div>
+                        <div class="stat-progress"></div>
                     </div>
                 </div>
             </div>
