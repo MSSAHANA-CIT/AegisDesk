@@ -139,8 +139,8 @@
         }
 
         .logo-icon {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             background-size: 200% 200%;
             border-radius: 12px;
@@ -148,11 +148,12 @@
             align-items: center;
             justify-content: center;
             box-shadow: 
-                0 8px 24px rgba(99, 102, 241, 0.5),
+                0 6px 20px rgba(99, 102, 241, 0.4),
                 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-            animation: gradientShift 3s ease infinite, logoFloat 3s ease-in-out infinite;
+            animation: gradientShift 3s ease infinite;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .logo-icon::before {
@@ -182,12 +183,14 @@
         }
 
         .logo-text {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary-light), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            white-space: nowrap;
+            letter-spacing: -0.5px;
         }
 
         .header-right {
@@ -197,8 +200,8 @@
         }
 
         .btn-icon {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
             background: rgba(30, 41, 59, 0.7);
             border: 2px solid rgba(99, 102, 241, 0.2);
@@ -210,6 +213,12 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .btn-icon svg {
+            width: 18px;
+            height: 18px;
         }
 
         .btn-icon::before {
@@ -648,7 +657,7 @@
             display: flex;
             flex-direction: column;
             gap: 0;
-            padding: 32px 40px;
+            padding: 24px 32px;
             margin-bottom: 0;
             min-height: 0;
             max-height: 100%;
@@ -699,15 +708,16 @@
 
         .chat-message {
             display: flex;
-            gap: 20px;
-            padding: 32px 40px;
-            animation: messageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 16px;
+            padding: 24px 32px;
+            animation: messageSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom: 1px solid rgba(99, 102, 241, 0.08);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             background: transparent;
             z-index: 1;
+            align-items: flex-start;
         }
 
         .chat-message::before {
@@ -768,9 +778,9 @@
         }
 
         .chat-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             background: linear-gradient(135deg, var(--success), #10b981, #059669);
             background-size: 200% 200%;
             display: flex;
@@ -778,12 +788,17 @@
             justify-content: center;
             flex-shrink: 0;
             box-shadow: 
-                0 8px 24px rgba(25, 195, 125, 0.4),
+                0 6px 20px rgba(25, 195, 125, 0.35),
                 0 0 0 2px rgba(255, 255, 255, 0.1) inset;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            animation: gradientShift 3s ease infinite, avatarPulse 2s ease-in-out infinite;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .chat-avatar svg {
+            width: 20px;
+            height: 20px;
         }
 
         .chat-avatar::after {
@@ -910,24 +925,24 @@
 
         .chat-input-container {
             display: flex;
-            gap: 16px;
-            padding: 28px 32px;
+            gap: 12px;
+            padding: 20px 24px;
             background: linear-gradient(180deg, 
                 rgba(15, 23, 42, 0.95) 0%, 
                 rgba(30, 41, 59, 0.98) 100%);
             backdrop-filter: blur(40px) saturate(180%);
             border-top: 2px solid rgba(99, 102, 241, 0.3);
-            border-radius: 28px 28px 0 0;
+            border-radius: 24px 24px 0 0;
             position: sticky;
             bottom: 0;
             z-index: 200;
             flex-shrink: 0;
             margin-top: auto;
             box-shadow: 
-                0 -12px 48px rgba(0, 0, 0, 0.5),
+                0 -8px 32px rgba(0, 0, 0, 0.4),
                 inset 0 2px 0 rgba(255, 255, 255, 0.08),
                 0 0 0 1px rgba(99, 102, 241, 0.1) inset;
-            animation: inputSlideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: inputSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes inputSlideUp {
@@ -948,24 +963,25 @@
 
         .chat-input {
             width: 100%;
-            padding: 20px 28px;
+            padding: 16px 20px;
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.95) 0%, 
                 rgba(15, 23, 42, 0.9) 100%);
             border: 2px solid rgba(99, 102, 241, 0.25);
-            border-radius: 20px;
+            border-radius: 16px;
             color: var(--text-primary);
-            font-size: 16px;
+            font-size: 15px;
             outline: none;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             resize: none;
-            min-height: 64px;
-            max-height: 200px;
+            min-height: 56px;
+            max-height: 180px;
             font-family: 'Inter', sans-serif;
             box-shadow: 
-                0 4px 20px rgba(0, 0, 0, 0.4),
+                0 4px 16px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(20px);
+            line-height: 1.5;
         }
 
         .chat-input:focus {
@@ -981,27 +997,32 @@
         }
 
         .chat-send {
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             background-size: 200% 200%;
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             flex-shrink: 0;
             box-shadow: 
-                0 8px 24px rgba(99, 102, 241, 0.5),
+                0 6px 20px rgba(99, 102, 241, 0.4),
                 0 0 0 2px rgba(255, 255, 255, 0.1) inset;
             position: relative;
             overflow: hidden;
             animation: gradientShift 3s ease infinite;
+        }
+        
+        .chat-send svg {
+            width: 20px;
+            height: 20px;
         }
 
         .chat-send::before {
@@ -1892,12 +1913,13 @@
 
             async getAIResponse(userMessage) {
                 const currentChat = this.getCurrentChat();
+                // Limit context to last 10 messages for faster responses
                 const messages = [
                     {
                         role: 'system',
-                        content: `You are AegisDesk AI, an advanced AI assistant. You are intelligent, helpful, and capable of understanding context deeply. Be conversational, friendly, and engaging. Provide detailed, helpful responses when appropriate. Use markdown formatting for better readability. Show personality and enthusiasm.`
+                        content: `You are AegisDesk AI, an advanced AI assistant. Be concise, helpful, and engaging. Use markdown for formatting.`
                     },
-                    ...(currentChat?.messages || []).slice(-20).filter(msg => msg.role && msg.content).map(msg => ({
+                    ...(currentChat?.messages || []).slice(-10).filter(msg => msg.role && msg.content).map(msg => ({
                         role: msg.role,
                         content: msg.content
                     })),
@@ -1905,7 +1927,10 @@
                 ];
 
                 try {
-                    // Use Vercel API endpoint - API key is stored securely on server
+                    // Use Vercel API endpoint with timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second client timeout
+                    
                     const response = await fetch('/api/chat', {
                         method: 'POST',
                         headers: {
@@ -1913,8 +1938,11 @@
                         },
                         body: JSON.stringify({
                             messages: messages
-                        })
+                        }),
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
 
                     if (!response.ok) {
                         const errorData = await response.json().catch(() => ({}));
@@ -1936,10 +1964,18 @@
                     return data.choices[0].message.content || 'I apologize, but I could not generate a response.';
                 } catch (error) {
                     console.error('AI API error:', error);
+                    
+                    // Handle timeout
+                    if (error.name === 'AbortError' || error.message.includes('timeout')) {
+                        throw new Error('Request timed out. The AI is taking too long. Please try a shorter message or try again.');
+                    }
+                    
                     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
                         throw new Error('Invalid API key. Please check your OpenAI API key in settings.');
                     } else if (error.message.includes('429') || error.message.includes('rate limit')) {
                         throw new Error('Rate limit exceeded. Please try again in a moment.');
+                    } else if (error.message.includes('504') || error.message.includes('timeout')) {
+                        throw new Error('Request timed out. Please try again with a shorter message.');
                     } else if (error.message.includes('network') || error.message.includes('fetch')) {
                         throw new Error('Network error. Please check your internet connection.');
                     }

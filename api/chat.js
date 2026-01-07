@@ -30,10 +30,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Try GPT-4o-mini first, fallback to gpt-3.5-turbo if not available
-    let model = "gpt-4o-mini";
+    // Use faster model and optimized settings for speed
+    let model = "gpt-3.5-turbo"; // Faster than gpt-4o-mini
     
-    // Call OpenAI API
+    // Create timeout controller
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+    
+    // Call OpenAI API with timeout
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -41,50 +45,25 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: model, // Using GPT-4o-mini for better performance and cost efficiency
+        model: model,
         messages: messages,
-        max_tokens: 2000,
-        temperature: 0.8,
+        max_tokens: 1000, // Reduced for faster responses
+        temperature: 0.7, // Slightly lower for faster generation
         top_p: 0.9,
-        frequency_penalty: 0.3,
-        presence_penalty: 0.3,
+        frequency_penalty: 0.2,
+        presence_penalty: 0.2,
         stream: false
       }),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     const data = await response.json();
 
     // Handle OpenAI API errors
     if (!response.ok) {
       console.error("OpenAI API error:", data);
-      
-      // If model not found, try fallback to gpt-3.5-turbo
-      if (data.error?.code === 'model_not_found' || data.error?.message?.includes('model')) {
-        console.log("Falling back to gpt-3.5-turbo");
-        const fallbackResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: messages,
-            max_tokens: 2000,
-            temperature: 0.8,
-            top_p: 0.9,
-            frequency_penalty: 0.3,
-            presence_penalty: 0.3,
-            stream: false
-          }),
-        });
-        
-        const fallbackData = await fallbackResponse.json();
-        if (fallbackResponse.ok) {
-          return res.status(200).json(fallbackData);
-        }
-      }
-      
       return res.status(response.status).json({
         error: data.error?.message || "OpenAI API error",
         details: data.error
@@ -95,6 +74,15 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   } catch (error) {
     console.error("OpenAI API error:", error);
+    
+    // Handle timeout
+    if (error.name === 'AbortError' || error.message.includes('timeout')) {
+      return res.status(504).json({ 
+        error: "Request timeout. The AI is taking too long to respond. Please try again.",
+        message: "Timeout after 25 seconds"
+      });
+    }
+    
     return res.status(500).json({ 
       error: "Failed to communicate with OpenAI API",
       message: error.message 
