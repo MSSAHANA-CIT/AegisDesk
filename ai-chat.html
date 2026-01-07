@@ -611,7 +611,7 @@
             padding: 0;
             min-height: calc(100vh - 70px);
             min-height: calc(100dvh - 70px);
-            padding-bottom: 140px; /* keep space for fixed input bar */
+            padding-bottom: 220px; /* keep space for fixed input bar */
             animation: mainFadeIn 0.8s ease-out;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: calc(100% - 320px);
@@ -928,25 +928,24 @@
         .chat-input-container {
             display: flex;
             gap: 0;
-            padding: 20px 24px;
+            padding: 16px 18px;
             background: linear-gradient(180deg, 
                 rgba(15, 23, 42, 0.95) 0%, 
                 rgba(30, 41, 59, 0.98) 100%);
             backdrop-filter: blur(40px) saturate(180%);
             border-top: 2px solid rgba(99, 102, 241, 0.3);
-            border-radius: 24px 24px 0 0;
+            border-radius: 20px 20px 0 0;
             position: fixed;
-            left: 16px;
-            right: 16px;
-            transform: none;
-            bottom: 16px;
-            width: auto;
-            max-width: 1200px;
-            z-index: 500;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: none;
+            z-index: 1100;
             flex-shrink: 0;
             margin: 0 auto;
             box-shadow: 
-                0 -8px 32px rgba(0, 0, 0, 0.4),
+                0 -8px 32px rgba(0, 0, 0, 0.35),
                 inset 0 2px 0 rgba(255, 255, 255, 0.08),
                 0 0 0 1px rgba(99, 102, 241, 0.1) inset,
                 0 18px 48px rgba(0,0,0,0.45);
