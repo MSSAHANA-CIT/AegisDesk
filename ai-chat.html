@@ -1066,11 +1066,24 @@
         .chat-send {
             pointer-events: auto !important;
             cursor: pointer !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            touch-action: manipulation !important;
         }
         
         .chat-send:not(:disabled) {
             pointer-events: auto !important;
             cursor: pointer !important;
+        }
+        
+        .chat-send * {
+            pointer-events: none !important;
+        }
+        
+        .chat-input-container * {
+            pointer-events: auto !important;
         }
 
         .chat-typing {
@@ -1892,7 +1905,7 @@
                     this.input.style.height = Math.min(this.input.scrollHeight, 200) + 'px';
                 });
 
-                // Send message function
+                // Send message function - MAKE IT ACCESSIBLE
                 const sendMessage = () => {
                     console.log('sendMessage called');
                     
@@ -1963,22 +1976,73 @@
                     });
                 };
 
-                // Add click event to send button
+                // Add click event to send button - MULTIPLE METHODS TO ENSURE IT WORKS
                 if (this.sendBtn) {
                     console.log('Adding click listener to send button');
+                    
+                    // Method 1: Standard click event
                     this.sendBtn.addEventListener('click', (e) => {
-                        console.log('Send button clicked!', e);
+                        console.log('Send button clicked! (click event)', e);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        sendMessage();
+                        return false;
+                    }, true); // Use capture phase
+                    
+                    // Method 2: Mouseup event (more reliable)
+                    this.sendBtn.addEventListener('mouseup', (e) => {
+                        console.log('Send button mouseup!', e);
                         e.preventDefault();
                         e.stopPropagation();
                         sendMessage();
+                        return false;
                     });
                     
-                    // Also add mousedown to ensure it works
-                    this.sendBtn.addEventListener('mousedown', (e) => {
+                    // Method 3: Touch event for mobile
+                    this.sendBtn.addEventListener('touchend', (e) => {
+                        console.log('Send button touched!', e);
                         e.preventDefault();
+                        e.stopPropagation();
+                        sendMessage();
+                        return false;
                     });
+                    
+                    // Method 4: Direct onclick attribute as fallback
+                    const self = this;
+                    this.sendBtn.onclick = function(e) {
+                        console.log('Send button onclick!', e);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        sendMessage();
+                        return false;
+                    };
+                    
+                    // Store sendMessage function globally for fallback access
+                    window.aegisDeskSendMessage = () => {
+                        console.log('Global sendMessage called');
+                        sendMessage();
+                    };
+                    
+                    // Ensure button is clickable
+                    this.sendBtn.style.pointerEvents = 'auto';
+                    this.sendBtn.style.cursor = 'pointer';
+                    this.sendBtn.setAttribute('tabindex', '0');
+                    
+                    // Test if button is actually clickable
+                    console.log('Send button element:', this.sendBtn);
+                    console.log('Send button computed style:', window.getComputedStyle(this.sendBtn).pointerEvents);
                 } else {
                     console.error('Send button not found when setting up events!');
+                    // Try to find it again
+                    setTimeout(() => {
+                        const retryBtn = document.getElementById('chat-send');
+                        if (retryBtn) {
+                            console.log('Found send button on retry, setting up events');
+                            retryBtn.addEventListener('click', sendMessage);
+                            retryBtn.onclick = sendMessage;
+                        }
+                    }, 1000);
                 }
 
                 // Add Enter key handler
@@ -2430,8 +2494,78 @@
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', () => {
             createParticles();
-            new AIChat();
+            const aiChat = new AIChat();
             new SidebarManager();
+            
+            // EXTRA: Direct button initialization as fallback
+            setTimeout(() => {
+                const sendBtn = document.getElementById('chat-send');
+                const input = document.getElementById('chat-input');
+                
+                if (sendBtn && input) {
+                    console.log('Direct button initialization - button found');
+                    
+                    // Remove any existing listeners and add fresh ones
+                    const newSendBtn = sendBtn.cloneNode(true);
+                    sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+                    
+                    // Add direct click handler
+                    newSendBtn.addEventListener('click', function(e) {
+                        console.log('DIRECT BUTTON CLICK HANDLER FIRED!', e);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const text = input.value.trim();
+                        if (text && !aiChat.isTyping) {
+                            console.log('Calling sendMessage directly');
+                            input.dispatchEvent(new KeyboardEvent('keydown', {
+                                key: 'Enter',
+                                code: 'Enter',
+                                keyCode: 13,
+                                which: 13,
+                                bubbles: true,
+                                cancelable: true
+                            }));
+                        }
+                    });
+                    
+                    // Also add direct onclick - use the global function or call directly
+                    newSendBtn.onclick = function(e) {
+                        console.log('DIRECT ONCLICK FIRED!', e);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Use global function if available, otherwise call directly
+                        if (window.aegisDeskSendMessage) {
+                            window.aegisDeskSendMessage();
+                        } else {
+                            const text = input.value.trim();
+                            if (text && !aiChat.isTyping) {
+                                aiChat.hideWelcome();
+                                aiChat.addMessage('user', text);
+                                input.value = '';
+                                input.style.height = 'auto';
+                                
+                                aiChat.showTyping();
+                                aiChat.getAIResponse(text).then(response => {
+                                    aiChat.hideTyping();
+                                    aiChat.addMessage('assistant', response);
+                                    aiChat.saveChats();
+                                }).catch(error => {
+                                    aiChat.hideTyping();
+                                    aiChat.addMessage('assistant', error.message || 'An error occurred');
+                                    aiChat.saveChats();
+                                });
+                            }
+                        }
+                        return false;
+                    };
+                    
+                    console.log('Direct button handlers added');
+                } else {
+                    console.error('Direct initialization failed - button or input not found');
+                }
+            }, 500);
         });
     </script>
 </body>
