@@ -44,6 +44,7 @@
             overflow-x: hidden;
             overflow-y: auto;
             width: 100%;
+            padding-bottom: 180px; /* keep space for fixed input bar */
         }
 
         body::before {
@@ -935,10 +936,12 @@
             border-top: 2px solid rgba(99, 102, 241, 0.3);
             border-radius: 24px 24px 0 0;
             position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 16px;
+            right: 16px;
+            transform: none;
             bottom: 16px;
-            width: min(1200px, calc(100% - 32px));
+            width: auto;
+            max-width: 1200px;
             z-index: 500;
             flex-shrink: 0;
             margin: 0 auto;
@@ -1926,6 +1929,7 @@
                 // Send message function - MAKE IT ACCESSIBLE
                 const sendMessage = () => {
                     console.log('sendMessage called');
+                    this.ensureInputVisible();
                     
                     if (!this.input) {
                         console.error('Input field not available');
@@ -1960,6 +1964,7 @@
                     this.addMessage('user', text);
                     this.input.value = '';
                     this.input.style.height = 'auto';
+                    this.ensureInputVisible();
                     
                     // Update chat title if it's the first message
                     if (currentChat.messages.length === 0 && currentChat.title === 'New Chat') {
@@ -1981,6 +1986,7 @@
                         if (this.sendBtn) {
                             this.sendBtn.disabled = false;
                         }
+                        this.ensureInputVisible();
                     }).catch(error => {
                         console.error('Error in getAIResponse:', error);
                         this.hideTyping();
@@ -1991,6 +1997,7 @@
                         if (this.sendBtn) {
                             this.sendBtn.disabled = false;
                         }
+                        this.ensureInputVisible();
                     });
                 };
 
@@ -2283,6 +2290,24 @@
                 `;
                 this.messagesContainer.appendChild(messageEl);
                 this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+                this.ensureInputVisible();
+            }
+
+            ensureInputVisible() {
+                try {
+                    if (this.messagesContainer) {
+                        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+                    }
+                    window.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                    if (this.input) {
+                        this.input.focus({ preventScroll: false });
+                    }
+                } catch (err) {
+                    console.warn('ensureInputVisible error', err);
+                }
             }
 
             formatMessage(text) {
