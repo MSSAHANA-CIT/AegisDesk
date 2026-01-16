@@ -43,10 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 100);
     
-    // Welcome message (optional)
+    // Welcome message and test notification
     setTimeout(() => {
         console.log('Welcome to AegisDesk! Press Alt+Space to open the apps menu.');
-    }, 1000);
+        
+        // Show welcome notification with new features
+        if (typeof notificationSystem !== 'undefined') {
+            notificationSystem.success('AegisDesk Enhanced!', 'New features loaded: Themes, Notifications, Virtual Desktops, and more!', {
+                duration: 5000
+            });
+        }
+    }, 3000);
     
     // Prevent context menu on desktop (optional)
     document.addEventListener('contextmenu', (e) => {
@@ -55,26 +62,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Handle window resize
+    // Handle window resize - Heavily debounced for performance
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-            // Ensure windows stay within bounds
-            windowManager.windows.forEach(win => {
-                const rect = win.getBoundingClientRect();
-                const maxLeft = window.innerWidth - rect.width;
-                const maxTop = window.innerHeight - rect.height - 48;
-                
-                if (parseInt(win.style.left) > maxLeft) {
-                    win.style.left = Math.max(0, maxLeft) + 'px';
-                }
-                if (parseInt(win.style.top) > maxTop) {
-                    win.style.top = Math.max(0, maxTop) + 'px';
-                }
-            });
-        }, 250);
-    });
+            // Only update if window manager is available
+            if (typeof windowManager !== 'undefined' && windowManager.windows) {
+                // Use requestAnimationFrame for smooth updates
+                requestAnimationFrame(() => {
+                    windowManager.windows.forEach(win => {
+                        const rect = win.getBoundingClientRect();
+                        const maxLeft = window.innerWidth - rect.width;
+                        const maxTop = window.innerHeight - rect.height - 48;
+                        
+                        if (parseInt(win.style.left) > maxLeft) {
+                            win.style.left = Math.max(0, maxLeft) + 'px';
+                        }
+                        if (parseInt(win.style.top) > maxTop) {
+                            win.style.top = Math.max(0, maxTop) + 'px';
+                        }
+                    });
+                });
+            }
+        }, 500); // Increased debounce from 250ms to 500ms
+    }, { passive: true });
     
     // Performance optimization: Use passive listeners where possible
     document.addEventListener('touchstart', () => {}, { passive: true });

@@ -262,7 +262,10 @@ body {
 .search-bar:focus-within {
     background: rgba(30, 41, 59, 0.95);
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    box-shadow: 
+        0 0 0 3px rgba(99, 102, 241, 0.1),
+        0 8px 24px rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
 }
 
 .search-bar svg {
@@ -283,6 +286,27 @@ body {
 
 .search-bar input::placeholder {
     color: var(--text-muted);
+}
+
+.search-bar {
+    position: relative;
+}
+
+.search-hint {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    right: 0;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.search-bar:focus-within .search-hint {
+    opacity: 1;
 }
 
 .search-bar .search-btn {
@@ -819,6 +843,55 @@ body {
 
 .slide-up {
     animation: slideUp 0.3s ease-out;
+}
+
+/* Theme Support */
+.theme-option {
+    transition: all 0.3s ease;
+}
+
+.theme-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.theme-option.active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    border-color: var(--primary) !important;
+}
+
+/* Enhanced Animations */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Micro-interactions */
+.interactive-element {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-element:hover {
+    transform: translateY(-2px);
+}
+
+.interactive-element:active {
+    transform: translateY(0);
 }
 
 /* Responsive */

@@ -47,16 +47,22 @@ class WorldClock {
             grid.appendChild(clockItem);
         });
 
-        // Update clocks every second with precise timing
+        // Update clocks every 30 seconds (was every second) for better performance
         this.updateClocks();
+        this.lastUpdateTime = Date.now();
         setInterval(() => {
             const now = Date.now();
-            // Prevent drift by scheduling next update precisely
-            if (now - this.lastUpdateTime >= 1000) {
+            // Update every 30 seconds instead of every second
+            if (now - this.lastUpdateTime >= 30000) {
                 this.updateClocks();
                 this.lastUpdateTime = now;
             }
-        }, 1000);
+        }, 30000);
+        
+        // But update time display every minute for accuracy
+        setInterval(() => {
+            this.updateClocks();
+        }, 60000);
     }
 
     createClock(timezone, index) {

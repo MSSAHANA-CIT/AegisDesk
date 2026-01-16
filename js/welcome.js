@@ -139,13 +139,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start boot sequence
     initBootSequence();
     
-    // Update clock immediately and then every second (precise timing)
+    // Update clock immediately and then every 30 seconds for better performance
     updateClock();
-    setInterval(() => {
+    
+    // Update on the minute for accuracy (less frequent updates)
+    const secondsUntilNextMinute = 60000 - (new Date().getSeconds() * 1000 + new Date().getMilliseconds());
+    setTimeout(() => {
         if (bootComplete) {
             updateClock();
         }
-    }, 1000);
+        setInterval(() => {
+            if (bootComplete) {
+                updateClock();
+            }
+        }, 60000); // Every minute instead of every second
+    }, secondsUntilNextMinute);
     
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

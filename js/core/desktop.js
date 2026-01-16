@@ -114,6 +114,25 @@ class Desktop {
                 this.openApp(appId);
             });
         });
+
+        // Theme switcher button
+        const themeSwitcherBtn = document.getElementById('theme-switcher-btn');
+        if (themeSwitcherBtn && typeof themeSystem !== 'undefined') {
+            themeSwitcherBtn.addEventListener('click', () => {
+                const newTheme = themeSystem.cycleTheme();
+                if (typeof notificationSystem !== 'undefined') {
+                    notificationSystem.info('Theme Changed', `Switched to ${themeSystem.themes[newTheme].name} theme`);
+                }
+            });
+        }
+
+        // Quick actions button
+        const quickActionsBtn = document.getElementById('quick-actions-btn');
+        if (quickActionsBtn && typeof quickActions !== 'undefined') {
+            quickActionsBtn.addEventListener('click', () => {
+                quickActions.toggle();
+            });
+        }
     }
 
     setupSearch() {
@@ -228,7 +247,15 @@ class Desktop {
         };
 
         updateClock();
-        setInterval(updateClock, 1000);
+        // Update every 30 seconds instead of every second (huge performance gain)
+        setInterval(updateClock, 30000);
+        
+        // Update immediately every minute on the minute
+        const secondsUntilNextMinute = 60000 - (new Date().getSeconds() * 1000 + new Date().getMilliseconds());
+        setTimeout(() => {
+            updateClock();
+            setInterval(updateClock, 60000); // Then update every minute
+        }, secondsUntilNextMinute);
     }
 
     setupKeyboardShortcuts() {
@@ -290,6 +317,26 @@ class Desktop {
                     windowManager.closeWindow(activeWindow);
                 }
             }
+
+            // T key: Cycle theme (when not typing)
+            if (e.key === 't' && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.target.closest('input, textarea')) {
+                if (typeof themeSystem !== 'undefined') {
+                    const newTheme = themeSystem.cycleTheme();
+                    if (typeof notificationSystem !== 'undefined') {
+                        notificationSystem.info('Theme Changed', `Switched to ${themeSystem.themes[newTheme].name} theme`);
+                    }
+                }
+            }
+
+            // T key: Cycle theme (when not typing)
+            if (e.key === 't' && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.target.closest('input, textarea')) {
+                if (typeof themeSystem !== 'undefined') {
+                    const newTheme = themeSystem.cycleTheme();
+                    if (typeof notificationSystem !== 'undefined') {
+                        notificationSystem.info('Theme Changed', `Switched to ${themeSystem.themes[newTheme].name} theme`);
+                    }
+                }
+            }
         });
     }
 
@@ -313,7 +360,7 @@ class Desktop {
         if (!appsGrid) return;
 
         // Get app order (preserve existing order from HTML if possible)
-        const appOrder = ['tasks', 'notes', 'weather', 'ai-chat', 'code-editor', 'terminal', 'music-player', 'drawing', 'system-monitor', 'gallery', 'playground', 'browser', 'bookmarks', 'calculator', 'calendar', 'files', 'settings'];
+        const appOrder = ['tasks', 'notes', 'weather', 'ai-chat', 'code-editor', 'terminal', 'music-player', 'drawing', 'system-monitor', 'gallery', 'playground', 'browser', 'bookmarks', 'calculator', 'calendar', 'files', 'settings', 'email', 'crypto-tracker', 'news-reader', 'help'];
         
         // Render apps from registry
         appsGrid.innerHTML = appOrder.map(appId => {

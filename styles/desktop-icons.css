@@ -52,24 +52,25 @@
     text-transform: uppercase;
     position: relative;
     text-shadow: 
-        0 0 20px rgba(99, 102, 241, 0.5),
-        0 0 40px rgba(139, 92, 246, 0.3),
-        0 0 60px rgba(236, 72, 153, 0.2);
-    animation: titleGlow 3s ease-in-out infinite;
+        0 0 15px rgba(99, 102, 241, 0.4),
+        0 0 30px rgba(139, 92, 246, 0.25),
+        0 0 45px rgba(236, 72, 153, 0.15);
+    animation: titleGlow 4s ease-in-out infinite; /* Slower animation for better performance */
+    will-change: text-shadow;
 }
 
 @keyframes titleGlow {
     0%, 100% {
         text-shadow: 
-            0 0 20px rgba(99, 102, 241, 0.5),
-            0 0 40px rgba(139, 92, 246, 0.3),
-            0 0 60px rgba(236, 72, 153, 0.2);
+            0 0 15px rgba(99, 102, 241, 0.4),
+            0 0 30px rgba(139, 92, 246, 0.25),
+            0 0 45px rgba(236, 72, 153, 0.15);
     }
     50% {
         text-shadow: 
-            0 0 30px rgba(99, 102, 241, 0.8),
-            0 0 60px rgba(139, 92, 246, 0.6),
-            0 0 90px rgba(236, 72, 153, 0.4);
+            0 0 20px rgba(99, 102, 241, 0.6),
+            0 0 40px rgba(139, 92, 246, 0.4),
+            0 0 60px rgba(236, 72, 153, 0.3);
     }
 }
 
@@ -86,12 +87,14 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: 
-        letterFloat 3s ease-in-out infinite,
-        gradientShift 4s ease infinite;
+        letterFloat 4s ease-in-out infinite, /* Slower animation */
+        gradientShift 6s ease infinite; /* Slower gradient */
     position: relative;
     transform-origin: center bottom;
     cursor: default;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Only transform for performance */
+    will-change: transform;
+    transform: translateZ(0); /* GPU acceleration */
 }
 
 .title-letter:hover {
@@ -138,15 +141,17 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, 
-        rgba(129, 140, 248, 0.3) 0%, 
-        rgba(99, 102, 241, 0.3) 50%, 
-        rgba(139, 92, 246, 0.3) 100%);
+        rgba(129, 140, 248, 0.2) 0%, 
+        rgba(99, 102, 241, 0.2) 50%, 
+        rgba(139, 92, 246, 0.2) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: blur(8px);
+    filter: blur(4px); /* Reduced blur for better performance */
     z-index: -1;
-    animation: letterGlow 2s ease-in-out infinite;
+    animation: letterGlow 3s ease-in-out infinite; /* Slower animation */
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
 @keyframes letterGlow {
@@ -256,13 +261,15 @@
     overflow: hidden;
     /* Simplified particles for better performance */
     background-image: 
-        radial-gradient(2px 2px at 20% 30%, rgba(99, 102, 241, 0.4), transparent),
-        radial-gradient(2px 2px at 60% 70%, rgba(139, 92, 246, 0.3), transparent);
+        radial-gradient(2px 2px at 20% 30%, rgba(99, 102, 241, 0.25), transparent),
+        radial-gradient(2px 2px at 60% 70%, rgba(139, 92, 246, 0.2), transparent);
     background-repeat: repeat;
-    background-size: 200px 200px;
-    animation: particleMove 30s linear infinite; /* Slower animation */
-    opacity: 0.4; /* Reduced opacity */
-    will-change: transform; /* Optimize for animation */
+    background-size: 300px 300px; /* Larger size = fewer repeats = better performance */
+    animation: particleMove 40s linear infinite; /* Slower animation */
+    opacity: 0.3; /* Reduced opacity */
+    will-change: transform;
+    transform: translateZ(0); /* GPU acceleration */
+    contain: layout style paint; /* Performance isolation */
 }
 
 /* Removed ::before pseudo-element for better performance */
@@ -328,11 +335,9 @@
     }
 }
 
-/* Add depth with multiple text shadows */
+/* Simplified filter for better performance */
 .desktop-title {
-    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3))
-            drop-shadow(0 0 20px rgba(139, 92, 246, 0.2))
-            drop-shadow(0 0 30px rgba(236, 72, 153, 0.1));
+    /* Removed multiple drop-shadows - using text-shadow instead for better performance */
 }
 
 @keyframes titleEntrance {
@@ -381,7 +386,10 @@
     scroll-behavior: auto; /* We control scrolling manually for smooth auto-scroll */
     scrollbar-width: none; /* Hide scrollbar */
     -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
-    will-change: scroll-left;
+    will-change: scroll-position;
+    transform: translateZ(0); /* GPU acceleration */
+    contain: layout style; /* Performance isolation */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .carousel-track::-webkit-scrollbar {
@@ -435,20 +443,25 @@
 .desktop-icon-wrapper {
     width: 100px;
     height: 100px;
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(20px);
+    background: rgba(30, 41, 59, 0.8); /* Increased opacity to reduce backdrop-filter dependency */
+    backdrop-filter: blur(10px); /* Reduced blur for better performance */
     border: 2px solid rgba(99, 102, 241, 0.3);
     border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                box-shadow 0.3s ease, 
+                background 0.3s ease; /* Specific properties only */
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1),
         0 0 0 0 rgba(99, 102, 241, 0);
     position: relative;
     overflow: hidden;
+    will-change: transform;
+    transform: translateZ(0); /* GPU acceleration */
+    contain: layout style paint;
 }
 
 .desktop-icon-item:hover .desktop-icon-wrapper {
@@ -502,8 +515,10 @@
     height: 56px;
     color: var(--primary-light);
     filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.4));
-    transition: all 0.4s ease;
+    transition: transform 0.3s ease, filter 0.3s ease; /* Specific properties only */
     z-index: 1;
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .desktop-icon-item:hover .desktop-icon-wrapper svg {

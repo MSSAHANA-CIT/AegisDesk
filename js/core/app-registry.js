@@ -213,6 +213,72 @@ const APP_REGISTRY = {
                 settingsApp.open();
             }
         }
+    },
+    'email': {
+        title: 'Email',
+        iconSVG: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>`,
+        open: function() {
+            if (typeof emailApp !== 'undefined') {
+                emailApp.createWindow();
+            }
+        }
+    },
+    'crypto-tracker': {
+        title: 'Crypto Tracker',
+        iconSVG: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>`,
+        open: function() {
+            if (typeof cryptoTrackerApp !== 'undefined') {
+                cryptoTrackerApp.createWindow();
+            }
+        }
+    },
+    'news-hub': {
+        title: 'Premium News Hub',
+        iconSVG: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+            <path d="M18 14h-8"></path>
+            <path d="M15 18h-5"></path>
+            <path d="M10 6h8v4h-8V6Z"></path>
+        </svg>`,
+        open: function() {
+            window.open('news.html', '_blank');
+        }
+    },
+    'news-reader': {
+        title: 'News Reader',
+        iconSVG: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+            <path d="M18 14h-8"></path>
+            <path d="M15 18h-5"></path>
+            <path d="M10 6h8v4h-8V6Z"></path>
+        </svg>`,
+        open: function() {
+            // Try new news app first
+            if (typeof newsApp !== 'undefined') {
+                newsApp.open();
+            } else if (typeof newsReaderApp !== 'undefined') {
+                newsReaderApp.createWindow();
+            }
+        }
+    },
+    'help': {
+        title: 'Help & Instructions',
+        iconSVG: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>`,
+        open: function() {
+            if (typeof helpApp !== 'undefined') {
+                helpApp.open();
+            }
+        }
     }
 };
 

@@ -142,9 +142,10 @@ class SystemMonitorApp {
 
     startMonitoring(window) {
         this.updateStats(window);
+        // Reduce update frequency from 1s to 3s for better performance
         this.updateInterval = setInterval(() => {
             this.updateStats(window);
-        }, 1000);
+        }, 3000);
 
         // Update system info
         this.updateSystemInfo(window);

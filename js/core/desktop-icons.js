@@ -481,16 +481,35 @@ class DesktopIconCarousel {
         
         // Wait a bit before starting auto-scroll
         setTimeout(() => {
-            // Start auto-scrolling with smooth animation
-            const scrollSpeed = 2.5; // pixels per frame (increased for faster movement)
+            if (!this.track) return;
             
-            const autoScroll = () => {
-                if (this.isPaused || this.isDragging) {
-                    requestAnimationFrame(autoScroll);
+            // Optimized auto-scroll with frame skipping for better performance
+            const scrollSpeed = 1.5; // Reduced speed for smoother performance
+            let lastFrameTime = performance.now();
+            const targetFPS = 30; // Target 30fps instead of 60fps for better performance
+            const frameInterval = 1000 / targetFPS;
+            
+            const autoScroll = (currentTime) => {
+                // Skip frame if too soon (throttle to target FPS)
+                if (currentTime - lastFrameTime < frameInterval) {
+                    this.autoScrollInterval = requestAnimationFrame(autoScroll);
                     return;
                 }
                 
-                if (!this.track) return;
+                if (this.isPaused || this.isDragging || !this.track) {
+                    this.autoScrollInterval = requestAnimationFrame(autoScroll);
+                    return;
+                }
+                
+                // Check if element is visible (Intersection Observer would be better, but this is simpler)
+                const rect = this.track.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                
+                if (!isVisible) {
+                    // Element not visible, skip animation
+                    this.autoScrollInterval = requestAnimationFrame(autoScroll);
+                    return;
+                }
                 
                 const trackWidth = this.track.scrollWidth / 2; // Half because we duplicated icons
                 const currentScroll = this.track.scrollLeft;
@@ -504,26 +523,33 @@ class DesktopIconCarousel {
                     this.track.scrollLeft += scrollSpeed;
                 }
                 
-                requestAnimationFrame(autoScroll);
+                lastFrameTime = currentTime;
+                this.autoScrollInterval = requestAnimationFrame(autoScroll);
             };
             
-            autoScroll();
+            this.autoScrollInterval = requestAnimationFrame(autoScroll);
         }, 1000); // Start after 1 second
     }
     
     stopAutoScroll() {
         if (this.autoScrollInterval) {
-            clearInterval(this.autoScrollInterval);
+            cancelAnimationFrame(this.autoScrollInterval);
             this.autoScrollInterval = null;
         }
     }
     
     pauseAutoScroll() {
         this.isPaused = true;
+        if (this.track) {
+            this.track.style.animationPlayState = 'paused';
+        }
     }
     
     resumeAutoScroll() {
         this.isPaused = false;
+        if (this.track && !this.isDragging) {
+            this.track.style.animationPlayState = 'running';
+        }
     }
 }
 

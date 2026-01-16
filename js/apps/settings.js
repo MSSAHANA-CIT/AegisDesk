@@ -38,6 +38,19 @@ class SettingsApp {
                 </div>
                 
                 <div class="settings-section">
+                    <div class="settings-section-title">Appearance</div>
+                    <div class="settings-item">
+                        <div class="settings-item-label" style="flex: 1;">
+                            <div class="settings-item-title">Theme</div>
+                            <div class="settings-item-desc">Choose your preferred color theme</div>
+                            <div class="theme-selector" style="margin-top: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                                ${this.renderThemeOptions()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
                     <div class="settings-section-title">General</div>
                     <div class="settings-item">
                         <div class="settings-item-label">
@@ -74,6 +87,34 @@ class SettingsApp {
                             <small style="color: var(--text-muted); font-size: 11px; margin-top: 4px; display: block;">
                                 🔒 Your API key is stored locally in your browser and never sent anywhere except OpenAI's servers.<br>
                                 📝 Get your API key at: <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary-light); text-decoration: underline;">platform.openai.com/api-keys</a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-section-title">Advanced</div>
+                    <div class="settings-item">
+                        <div class="settings-item-label" style="flex: 1;">
+                            <div class="settings-item-title">Virtual Desktops</div>
+                            <div class="settings-item-desc">Switch between multiple desktop workspaces</div>
+                            <button id="desktop-switcher-btn" style="margin-top: 12px; padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 13px;">
+                                Open Desktop Switcher
+                            </button>
+                            <small style="color: var(--text-muted); font-size: 11px; margin-top: 4px; display: block;">
+                                Use Ctrl+Alt+Left/Right to switch desktops
+                            </small>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-label" style="flex: 1;">
+                            <div class="settings-item-title">Clipboard History</div>
+                            <div class="settings-item-desc">View and manage your clipboard history</div>
+                            <button id="clipboard-history-btn" style="margin-top: 12px; padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 13px;">
+                                Open Clipboard History
+                            </button>
+                            <small style="color: var(--text-muted); font-size: 11px; margin-top: 4px; display: block;">
+                                Use Ctrl+Shift+V to open clipboard history
                             </small>
                         </div>
                     </div>
@@ -169,6 +210,63 @@ class SettingsApp {
 
         // PWA Install button
         this.setupPWAInstall(content);
+
+        // Theme selector
+        content.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.dataset.theme;
+                if (typeof themeSystem !== 'undefined') {
+                    themeSystem.setTheme(theme);
+                    this.settings.theme = theme;
+                    this.save();
+                    if (typeof notificationSystem !== 'undefined') {
+                        notificationSystem.success('Settings', `Theme changed to ${themeSystem.themes[theme].name}`);
+                    }
+                }
+            });
+        });
+
+        // Desktop switcher
+        const desktopSwitcherBtn = content.querySelector('#desktop-switcher-btn');
+        desktopSwitcherBtn?.addEventListener('click', () => {
+            if (typeof virtualDesktops !== 'undefined') {
+                virtualDesktops.showDesktopSwitcher();
+            }
+        });
+
+        // Clipboard history
+        const clipboardHistoryBtn = content.querySelector('#clipboard-history-btn');
+        clipboardHistoryBtn?.addEventListener('click', () => {
+            if (typeof clipboardManager !== 'undefined') {
+                clipboardManager.showHistory();
+            }
+        });
+    }
+
+    renderThemeOptions() {
+        if (typeof themeSystem === 'undefined') {
+            return '<div>Theme system not available</div>';
+        }
+
+        const themes = themeSystem.getAvailableThemes();
+        const currentTheme = themeSystem.getTheme();
+
+        return themes.map(theme => `
+            <div class="theme-option ${theme.id === currentTheme ? 'active' : ''}" 
+                 data-theme="${theme.id}"
+                 style="
+                    padding: 16px;
+                    border: 2px solid ${theme.id === currentTheme ? 'var(--primary)' : 'var(--border)'};
+                    border-radius: 8px;
+                    cursor: pointer;
+                    text-align: center;
+                    background: var(--bg-card);
+                    transition: all 0.2s;
+                 ">
+                <div style="font-weight: 600; margin-bottom: 4px;">${theme.name}</div>
+                <div style="font-size: 11px; color: var(--text-muted);">${theme.id}</div>
+            </div>
+        `).join('');
     }
 
     setupPWAInstall(content) {

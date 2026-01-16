@@ -6,18 +6,34 @@
     <title>AegisDesk - AI-Powered Desktop OS</title>
     <meta name="description" content="AI-Powered Unified Desktop Operating System">
     <meta name="theme-color" content="#6366f1">
+    <!-- Performance optimizations -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/modern-system.css">
+    <link rel="stylesheet" href="styles/performance-optimized.css">
     <link rel="stylesheet" href="styles/motion-system.css">
     <link rel="stylesheet" href="styles/boot-sequence.css">
     <link rel="stylesheet" href="styles/parallax-desktop.css">
     <link rel="stylesheet" href="styles/window.css">
     <link rel="stylesheet" href="styles/apps.css">
     <link rel="stylesheet" href="styles/zoom-responsive.css">
+    <link rel="stylesheet" href="styles/news-tamilnadu.css">
     <link rel="stylesheet" href="styles/desktop-icons.css">
+    <link rel="stylesheet" href="styles/notifications.css">
+    <link rel="stylesheet" href="styles/advanced-apps.css">
+    <link rel="stylesheet" href="styles/help.css">
+    <link rel="stylesheet" href="styles/quick-actions.css">
+    <link rel="stylesheet" href="styles/search-suggestions.css">
+    <link rel="stylesheet" href="styles/desktop-widgets.css">
+    <link rel="stylesheet" href="styles/world-class-enhancements.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 </head>
 <body>
     <!-- Boot Sequence Overlay -->
@@ -47,10 +63,57 @@
     </div>
     
     <!-- Cursor Glow -->
-    <div class="cursor-glow" id="cursor-glow"></div>
+    <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+
+    <!-- Quick Launch Shortcuts -->
+    <div class="quick-launch" id="quick-launch" aria-label="Quick launch shortcuts">
+        <div class="quick-launch-item" data-app="tasks" title="New Task (Ctrl+N)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            New Task
+        </div>
+        <div class="quick-launch-item" data-app="notes" title="New Note (Ctrl+Shift+N)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            New Note
+        </div>
+        <div class="quick-launch-item" data-app="ai-chat" title="AI Assistant (Ctrl+K)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            AI Chat
+        </div>
+    </div>
+
+    <!-- Power Menu -->
+    <div class="power-menu" id="power-menu" role="menu" aria-label="Power menu">
+        <div class="power-menu-item" data-action="lock" role="menuitem">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Lock OS
+        </div>
+        <div class="power-menu-item" data-action="restart" role="menuitem">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+            </svg>
+            Restart
+        </div>
+        <div class="power-menu-item danger" data-action="shutdown" role="menuitem">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            Shutdown
+        </div>
+    </div>
 
     <!-- Desktop Icon Carousel -->
-    <div class="desktop-icon-carousel" id="desktop-icon-carousel">
+    <div class="desktop-icon-carousel" id="desktop-icon-carousel" aria-label="Pinned desktop apps carousel">
         <!-- AEGIS DESK Title -->
         <div class="desktop-title-container">
             <div class="desktop-title-wrapper">
@@ -93,7 +156,7 @@
     </div>
 
     <!-- Icon Enlargement Modal -->
-    <div class="icon-modal-overlay" id="icon-modal-overlay">
+    <div class="icon-modal-overlay" id="icon-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="icon-modal-name">
         <div class="icon-modal">
             <div class="icon-modal-icon" id="icon-modal-icon"></div>
             <div class="icon-modal-name" id="icon-modal-name"></div>
@@ -105,9 +168,9 @@
     </div>
 
     <!-- Taskbar -->
-    <div class="taskbar">
+    <div class="taskbar glass-effect" role="navigation" aria-label="AegisDesk taskbar">
         <div class="taskbar-left">
-            <button class="taskbar-app-icon active" data-action="show-apps-menu" title="Applications">
+            <button class="taskbar-app-icon active" data-action="show-apps-menu" title="Applications (Alt+Space)" aria-label="Open applications menu (Alt+Space)">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="7" height="7" rx="1"></rect>
                     <rect x="14" y="3" width="7" height="7" rx="1"></rect>
@@ -115,16 +178,23 @@
                     <rect x="3" y="14" width="7" height="7" rx="1"></rect>
                 </svg>
             </button>
+            <button class="taskbar-icon" data-app="help" title="Help & Instructions" aria-label="Open help and instructions" style="width: 40px; height: 40px; margin-left: 4px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
             <div class="taskbar-divider"></div>
-            <div class="taskbar-pinned-apps">
-                <button class="taskbar-icon" data-app="tasks" title="Tasks">
+            <div class="taskbar-pinned-apps" aria-label="Pinned apps" role="menubar">
+                <button class="taskbar-icon" data-app="tasks" title="Tasks" aria-label="Open Tasks app">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 11l3 3L22 4"></path>
                         <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
                     </svg>
                     <span class="taskbar-icon-label">Tasks</span>
                 </button>
-                <button class="taskbar-icon" data-app="notes" title="Notes">
+                <button class="taskbar-icon" data-app="notes" title="Notes" aria-label="Open Notes app">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
                         <path d="M14 2v6h6"></path>
@@ -134,7 +204,7 @@
                     </svg>
                     <span class="taskbar-icon-label">Notes</span>
                 </button>
-                <button class="taskbar-icon" data-app="weather" title="Weather">
+                <button class="taskbar-icon" data-app="weather" title="Weather" aria-label="Open Weather app">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 2v6m0 6v6"></path>
                         <path d="M18 8a6 6 0 01-6 6"></path>
@@ -144,7 +214,7 @@
                     </svg>
                     <span class="taskbar-icon-label">Weather</span>
                 </button>
-                <button class="taskbar-icon" data-app="ai-chat" title="AI Assistant">
+                <button class="taskbar-icon" data-app="ai-chat" title="AI Assistant" aria-label="Open AI Assistant">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                         <path d="M2 17l10 5 10-5"></path>
@@ -155,31 +225,59 @@
             </div>
         </div>
         <div class="taskbar-center">
-            <div class="search-bar">
+            <div class="search-bar" role="search">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
-                <input type="text" placeholder="Search Google, apps, or ask AI..." id="global-search">
+                <input
+                    type="text"
+                    placeholder="Search apps, actions, or web... (Ctrl+Shift+A for Quick Actions)"
+                    id="global-search"
+                    aria-label="Search apps, actions, or the web"
+                >
+                <div class="search-hint">Tip: type an app name (like “notes” or “terminal”) or a website, then press Enter.</div>
             </div>
         </div>
         <div class="taskbar-right">
             <div class="taskbar-windows" id="taskbar-windows"></div>
             <div class="taskbar-divider"></div>
-            <div class="system-tray">
-                <div class="time-display" id="time-display">00:00</div>
-                <div class="date-display" id="date-display">Mon, Jan 1</div>
+            <div class="system-tray" aria-label="System tray">
+                <button class="taskbar-icon quick-actions-btn" id="quick-actions-btn" title="Quick Actions (Ctrl+Shift+A)" aria-label="Open Quick Actions (Ctrl+Shift+A)" style="width: 32px; height: 32px; margin-right: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </button>
+                <button class="taskbar-icon modern-icon" id="theme-switcher-btn" title="Change Theme (T)" aria-label="Cycle theme (T)" style="width: 32px; height: 32px; margin-right: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                    </svg>
+                </button>
+                <button class="taskbar-icon modern-icon" id="power-menu-btn" title="Power Menu" aria-label="Open power menu" aria-haspopup="true" aria-expanded="false" style="width: 32px; height: 32px; margin-right: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                        <line x1="12" y1="2" x2="12" y2="12"></line>
+                    </svg>
+                </button>
+                <div class="time-display" id="time-display" aria-label="Current time">00:00</div>
+                <div class="date-display" id="date-display" aria-label="Current date">Mon, Jan 1</div>
             </div>
         </div>
     </div>
 
     <!-- Apps Menu -->
-    <div class="apps-menu" id="apps-menu">
+    <div class="apps-menu glass-effect" id="apps-menu" role="dialog" aria-label="Applications menu">
         <div class="apps-menu-header">
-            <h2>Applications</h2>
+            <div>
+                <h2>Applications</h2>
+                <p class="apps-menu-subtitle">Press Alt+Space to open, then start typing an app name or action.</p>
+            </div>
             <button class="close-menu" data-action="hide-apps-menu">&times;</button>
         </div>
-        <div class="icon-size-controls">
+        <div class="icon-size-controls" aria-label="Icon size controls">
             <label>Icon Size:</label>
             <div class="icon-size-buttons">
                 <button class="icon-size-btn" data-size="small">Small</button>
@@ -196,7 +294,7 @@
                 Explore
             </button>
         </div>
-        <div class="apps-grid">
+        <div class="apps-grid" aria-label="All applications">
             <div class="app-tile" data-app="tasks">
                 <div class="app-tile-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -358,44 +456,163 @@
                 </div>
                 <div class="app-tile-name">Settings</div>
             </div>
+            <div class="app-tile" data-app="email">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Email</div>
+            </div>
+            <div class="app-tile" data-app="crypto-tracker">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Crypto Tracker</div>
+            </div>
+            <div class="app-tile modern-icon" data-app="news-reader" title="News Reader - Multilingual News">
+                <div class="app-tile-icon modern-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+                        <path d="M18 14h-8"></path>
+                        <path d="M15 18h-5"></path>
+                        <path d="M10 6h8v4h-8V6Z"></path>
+                    </svg>
+                </div>
+                <div class="app-tile-name">News Reader</div>
+            </div>
+            <div class="app-tile" data-app="help">
+                <div class="app-tile-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="app-tile-name">Help & Instructions</div>
+            </div>
         </div>
     </div>
 
     <!-- Windows Container -->
     <div class="windows-container" id="windows-container"></div>
 
-    <!-- Scripts -->
-    <script src="js/utils/storage.js"></script>
-    <script src="js/utils/drag.js"></script>
-    <script src="js/core/os-store.js"></script>
-    <script src="js/core/command-bus.js"></script>
-    <script src="js/core/app-registry.js"></script>
-    <script src="js/core/boot-sequence.js"></script>
-    <script src="js/core/parallax-controller.js"></script>
-    <script src="js/core/window-manager.js"></script>
-    <script src="js/core/ai-system.js"></script>
-    <script src="js/core/desktop.js"></script>
-    <script src="js/core/desktop-icons.js"></script>
+    <!-- Scripts (deferred for faster initial render) -->
+    <script src="js/utils/storage.js" defer></script>
+    <script src="js/utils/drag.js" defer></script>
+    <script src="js/core/os-store.js" defer></script>
+    <script src="js/core/command-bus.js" defer></script>
+    <script src="js/core/app-registry.js" defer></script>
+    <script src="js/core/notification-system.js" defer></script>
+    <script src="js/core/zoom-detector.js" defer></script>
+    <script src="js/core/performance-manager.js" defer></script>
+    <script src="js/core/theme-system.js" defer></script>
+    <script src="js/core/tooltip-system.js" defer></script>
+    <script src="js/core/clipboard-manager.js" defer></script>
+    <script src="js/core/virtual-desktops.js" defer></script>
+    <script src="js/core/quick-actions.js" defer></script>
+    <script src="js/core/search-suggestions.js" defer></script>
+    <script src="js/core/desktop-widgets.js" defer></script>
+    <script src="js/core/boot-sequence.js" defer></script>
+    <script src="js/core/parallax-controller.js" defer></script>
+    <script src="js/core/window-manager.js" defer></script>
+    <script src="js/core/ai-system.js" defer></script>
+    <script src="js/core/desktop.js" defer></script>
+    <script src="js/core/desktop-icons.js" defer></script>
     <!-- Markdown support for Notes -->
-    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
-    <script src="js/apps/tasks.js"></script>
-    <script src="js/apps/notes.js"></script>
-    <script src="js/apps/weather.js"></script>
-    <script src="js/apps/ai-chat.js"></script>
-    <script src="js/apps/browser.js"></script>
-    <script src="js/apps/bookmarks.js"></script>
-    <script src="js/apps/calculator.js"></script>
-    <script src="js/apps/calendar.js"></script>
-    <script src="js/apps/files.js"></script>
-    <script src="js/apps/settings.js"></script>
-    <script src="js/apps/code-editor.js"></script>
-    <script src="js/apps/terminal.js"></script>
-    <script src="js/apps/music-player.js"></script>
-    <script src="js/apps/drawing.js"></script>
-    <script src="js/apps/system-monitor.js"></script>
-    <script src="js/apps/gallery.js"></script>
-    <script src="js/apps/playground.js"></script>
-    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js" defer></script>
+    <script src="js/apps/tasks.js" defer></script>
+    <script src="js/apps/notes.js" defer></script>
+    <script src="js/apps/weather.js" defer></script>
+    <script src="js/apps/ai-chat.js" defer></script>
+    <script src="js/apps/browser.js" defer></script>
+    <script src="js/apps/bookmarks.js" defer></script>
+    <script src="js/apps/calculator.js" defer></script>
+    <script src="js/apps/calendar.js" defer></script>
+    <script src="js/apps/files.js" defer></script>
+    <script src="js/apps/settings.js" defer></script>
+    <script src="js/apps/code-editor.js" defer></script>
+    <script src="js/apps/terminal.js" defer></script>
+    <script src="js/apps/music-player.js" defer></script>
+    <script src="js/apps/drawing.js" defer></script>
+    <script src="js/apps/system-monitor.js" defer></script>
+    <script src="js/apps/gallery.js" defer></script>
+    <script src="js/apps/playground.js" defer></script>
+    <script src="js/apps/email.js" defer></script>
+    <script src="js/apps/crypto-tracker.js" defer></script>
+    <script src="js/apps/news-reader.js" defer></script>
+    <script src="js/apps/news.js" defer></script>
+    <script src="js/apps/help.js" defer></script>
+    <script src="js/main.js" defer></script>
+    
+    <!-- Power Menu & Quick Launch Handler -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Power Menu
+        const powerMenuBtn = document.getElementById('power-menu-btn');
+        const powerMenu = document.getElementById('power-menu');
+        
+        if (powerMenuBtn && powerMenu) {
+            powerMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = powerMenu.classList.toggle('visible');
+                powerMenuBtn.setAttribute('aria-expanded', isVisible);
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!powerMenu.contains(e.target) && !powerMenuBtn.contains(e.target)) {
+                    powerMenu.classList.remove('visible');
+                    powerMenuBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            powerMenu.querySelectorAll('.power-menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const action = item.dataset.action;
+                    if (action === 'lock') {
+                        if (typeof notificationSystem !== 'undefined') {
+                            notificationSystem.info('Lock', 'OS locked (demo mode)');
+                        }
+                    } else if (action === 'restart') {
+                        if (confirm('Restart AegisDesk?')) {
+                            window.location.reload();
+                        }
+                    } else if (action === 'shutdown') {
+                        if (confirm('Shutdown AegisDesk? This will reload the page.')) {
+                            window.location.reload();
+                        }
+                    }
+                    powerMenu.classList.remove('visible');
+                    powerMenuBtn.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+        
+        // Quick Launch
+        const quickLaunchItems = document.querySelectorAll('.quick-launch-item');
+        quickLaunchItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const appId = item.dataset.app;
+                if (typeof desktop !== 'undefined' && desktop.openApp) {
+                    desktop.openApp(appId);
+                }
+            });
+        });
+        
+        // Add modern-icon class to all icons
+        setTimeout(() => {
+            document.querySelectorAll('.taskbar-icon, .app-tile-icon').forEach(icon => {
+                if (!icon.classList.contains('modern-icon')) {
+                    icon.classList.add('modern-icon');
+                }
+            });
+        }, 500);
+    });
+    </script>
 </body>
 </html>
 
